@@ -230,6 +230,17 @@ void RGraph::constructRGraph() {
                     _vRGEdge[_portPair2Edge[portPairId]][layId].push_back(e);
                 }
             }
+            for (size_t tPortId = 0; tPortId < numTPorts(netId); ++ tPortId) {
+                Port* tPort = _vTPort[netId][tPortId];
+                pair<size_t, size_t> portPairId = make_pair(sPortId, tPort->portId());
+                if (_portPair2Edge.count(portPairId) == 0) {
+                    _portPair2Edge[portPairId] = twoPinNetId;
+                    vector<RGEdge*> temp;
+                    vector< vector< RGEdge* > > temp2(numLayers(), temp);
+                    _vRGEdge.push_back(temp2);
+                    twoPinNetId ++;
+                }
+            }
             // build RGEdges and the map between tPorts
             for (size_t netTPortId = 0; netTPortId < _vTargetOASGNode[netId].size(); ++ netTPortId) {
                 OASGNode* tNode = targetOASGNode(netId, netTPortId, layId);
@@ -280,3 +291,23 @@ vector< vector<OASGEdge*> > RGraph::DFS(OASGNode* node, size_t netId) {
     return paths;
 }
 
+void RGraph::newDFS(OASGNode* node, size_t netId, vector< vector<OASGEdge*> >& paths) {
+    for (size_t edgeId = 0; edgeId < node->numOutEdges(); ++ edgeId) {
+        OASGEdge* succEdge = vOASGEdge(node->outEdgeId(edgeId));
+        if (succEdge->viaEdge() == false && succEdge->netId() == netId) {
+            if (succEdge->tNode()->nodeType() == OASGNodeType::TARGET) {
+                vector<OASGEdge*> temp;
+                temp.push_back(succEdge);
+                paths.push_back(temp);
+            }
+            else {
+                vector< vector<OASGEdge*> > tempPaths;
+                tempPaths = DFS(succEdge->tNode(), netId);
+                for (size_t tempPathId = 0; tempPathId < tempPaths.size(); ++ tempPathId) {
+                    tempPaths[tempPathId].push_back(succEdge);
+                    paths.push_back(tempPaths[tempPathId]);
+                }
+            }
+        }
+    }
+}

@@ -1087,8 +1087,8 @@ void GlobalMgr::voltCurrOpt() {
     // voltageAssignment(true);
  
     voltageDemandAssignment();
-    swapSTbyVolt();
-    voltageDemandAssignment();
+    // swapSTbyVolt();
+    // voltageDemandAssignment();
 
     vector<double> vMediumLayerThickness;
     vector<double> vMetalLayerThickness;
@@ -1895,20 +1895,20 @@ void GlobalMgr::voltageDemandAssignment() {
     */
 
     // add traces to each net
-    // for (size_t netId = 0; netId < _rGraph.numNets(); ++ netId) {
-    //     for (size_t layId = 0; layId < _rGraph.numLayers(); ++ layId) {
-    //         for (size_t pEdgeId = 0; pEdgeId < _rGraph.numPlaneOASGEdges(netId, layId); ++ pEdgeId) {
-    //             OASGEdge* e = _rGraph.vPlaneOASGEdge(netId, layId, pEdgeId);
-    //             // if (e->current() > 0) {
-    //                 Segment* segment = edge2Segment(e);
-    //                 // segment->plot(netId, layId);
-    //                 _db.vNet(netId)->addSegment(segment, layId);
-    //             // }
-    //         }
-    //     }
-    // }
-    // plotCurrentPaths();
-    // assert(false);
+    for (size_t netId = 0; netId < _rGraph.numNets(); ++ netId) {
+        for (size_t layId = 0; layId < _rGraph.numLayers(); ++ layId) {
+            for (size_t pEdgeId = 0; pEdgeId < _rGraph.numPlaneOASGEdges(netId, layId); ++ pEdgeId) {
+                OASGEdge* e = _rGraph.vPlaneOASGEdge(netId, layId, pEdgeId);
+                // if (e->current() > 0) {
+                    Segment* segment = edge2Segment(e);
+                    // segment->plot(netId, layId);
+                    _db.vNet(netId)->addSegment(segment, layId);
+                // }
+            }
+        }
+    }
+    plotCurrentPaths();
+    assert(false);
 
     for (size_t netId = 0; netId < _rGraph.numNets(); ++ netId) {
         VoltEigen solver(_rGraph.numNPortOASGNodes(netId));

@@ -183,19 +183,21 @@ int main(int argc, char* argv[]){
     globalMgr.buildOASG(string(argv[3]).find('5') != std::string::npos);
 
     // // globalMgr.buildOASGXObs();
-    // // globalMgr.plotOASG();
+    // globalMgr.plotOASG();
     
+    // globalMgr.genCrossConstrs();
+    // globalMgr.plotRGraph();
     if (string(argv[3]).find('5') != std::string::npos) {
     globalMgr.genCrossConstrs();
     // globalMgr.genCrossCapConstrs()
-    // globalMgr.layerDistribution();
+    globalMgr.layerDistribution();
     // // //globalMgr.plotRGraph();
-    // globalMgr.buildTestNCOASG();
-    // globalMgr.plotNCOASG();
+    globalMgr.buildTestNCOASG();
+    globalMgr.plotNCOASG();
     }
 
     // // globalMgr.voltageAssignment();
-    // /*
+    /*
     
     globalMgr.genCapConstrs();
 
@@ -227,7 +229,7 @@ int main(int argc, char* argv[]){
 
     globalMgr.plotCurrentPaths();
     
-    // */
+    */
     /*
     // DetailedMgr detailedMgr(db, plot, 2 * db.VIA16D8A24()->drillRadius());
     delete detailedMgr;

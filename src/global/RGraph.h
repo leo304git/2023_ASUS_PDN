@@ -324,6 +324,7 @@ class RGraph {
         // after OASG coonstruction, before layer distribution
         void constructRGraph();
         vector< vector<OASGEdge*> > DFS(OASGNode* node, size_t netId);
+        void newDFS(OASGNode* node, size_t netId, vector< vector<OASGEdge*> >& paths);
         OASGNode* addOASGNode(size_t netId, double x, double y, OASGNodeType type, Port* port = NULL, bool nPort = true);
         size_t addOASGEdge(size_t netId, size_t layId, OASGNode* sNode, OASGNode* tNode, bool viaEdge);
         size_t addViaOASGEdge(size_t netId, size_t layId, OASGNode* sNode, OASGNode* tNode, Polygon* boundPolygon);
