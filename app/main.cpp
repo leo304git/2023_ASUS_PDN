@@ -180,15 +180,15 @@ int main(int argc, char* argv[]){
     // // globalMgr.buildTestOASG();
 
     
-    globalMgr.buildOASG(string(argv[3]).find('5') != std::string::npos);
+    globalMgr.buildOASG(string(argv[3]).find('5') != std::string::npos, false);
 
     // // globalMgr.buildOASGXObs();
-    // globalMgr.plotOASG();
+    globalMgr.plotOASG();
     
-    // globalMgr.genCrossConstrs();
+    globalMgr.genCrossConstrs(false);
     // globalMgr.plotRGraph();
     if (string(argv[3]).find('5') != std::string::npos) {
-    globalMgr.genCrossConstrs();
+    globalMgr.genCrossConstrs(false);
     // globalMgr.genCrossCapConstrs()
     globalMgr.layerDistribution();
     // // //globalMgr.plotRGraph();

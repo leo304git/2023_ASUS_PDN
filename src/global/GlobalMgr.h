@@ -39,7 +39,7 @@ class GlobalMgr {
 
         void plotDB();
         void buildTestOASG();
-        void buildOASG(bool case5);
+        void buildOASG(bool case5, bool uniPath);
         void buildOASGXObs();
 
         bool isSegmentIntersectingWithObstacles(OASGNode* a, OASGNode* b, vector<vector<OASGNode*> > obstacle);
@@ -61,7 +61,7 @@ class GlobalMgr {
         void layerDistribution();
         void buildTestNCOASG();
         void plotNCOASG();
-        void genCrossConstrs();
+        void genCrossConstrs(bool uniPath);
         void genCapConstrs();
         void voltCurrOpt();
         void voltageAssignment(bool currentBased);
