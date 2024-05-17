@@ -178,7 +178,7 @@ void Parser::parse() {
     parseLayer();
     _db.setVIA16D8A24();
     parseST();
-
+    _plot.setBoard(_db.boardWidth(), _db.boardHeight(), _db.numLayers());
 
     // parse shape
     _fin.seekg(_fin.beg);
@@ -195,6 +195,20 @@ void Parser::parse() {
 void Parser::parseST() {
     string word;
     size_t numNets;
+    _finST >> word;
+    assert(word == "boardWidth");
+    _finST >> _boardWidth;
+    _finST >> word;
+    assert(word == "boardHeight");
+    _finST >> _boardHeight;
+    _db.setBoundary(_boardWidth, _boardHeight);
+    _finST >> word;
+    assert(word == "offsetX");
+    _finST >> _offsetX;
+    _finST >> word;
+    assert(word == "offsetY");
+    _finST >> _offsetY;
+
     _finST >> word;
     assert(word == "#Nets");
     _finST >> numNets;
@@ -369,26 +383,34 @@ void Parser::parseShape() {
         } else {
             isShape = false;
             cerr << "ERROR! Undefined Shape" << endl;
+            assert(false);
         }
         while(isShape) {
             Shape* shape;
             if(data.substr(0,7) == "Polygon") {
                 string netName;
                 stringstream sNetName;
+                if (ss.str().find("::") != string::npos) {
                 ss.ignore(numeric_limits<streamsize>::max(), ':');
                 ss.ignore(numeric_limits<streamsize>::max(), ':');
                 ss >> netName;
                 // Color = darkgreen
                 ss >> garbage;
+                assert(garbage == "Color");
                 ss >> garbage;
+                assert(garbage == "=");
                 ss >> garbage;
+                } else {
+                    // polygon with no net name
+                    ss >> garbage;
+                }
                 // vertices positions
                 vector< pair<double, double> > vVtx;
                 double x, y;
                 while (ss.peek() >= ' ') {
                     // cerr << ss.peek() << endl;
-                    x = extractDouble(ss, 2);
-                    y = extractDouble(ss, 2);
+                    x = extractDouble(ss, 2) - _offsetX;
+                    y = extractDouble(ss, 2) - _offsetY;
                     // cerr << "vtx = (" << x << ", " << y << ") " << endl;
                     vVtx.push_back(make_pair(x,y));
                 }
@@ -409,15 +431,20 @@ void Parser::parseShape() {
                     ss.str(data);
                 }
                 shape = new Polygon(vVtx, _plot);
+                if (!shape->outBox(0, _boardWidth, 0, _boardHeight)) {
+                    shape->trim(0, _boardWidth, 0, _boardHeight);
                 if (netName == "+VCCCORE+") {
                     shape->plot(SVGPlotColor::green, _layName2Id[layName]);
                 } else if (netName == "+VCCGT+") {
                     shape->plot(SVGPlotColor::lightsalmon, _layName2Id[layName]);
                 } else if (netName == "+VCCSA+") {
                     shape->plot(SVGPlotColor::purple, _layName2Id[layName]);
+                } else if (netName == "GND+") {
+                    shape->plot(SVGPlotColor::blue, _layName2Id[layName]);
                 } else {
-                    // shape->plot(SVGPlotColor::gray, _layName2Id[layName]);
-                } 
+                    shape->plot(SVGPlotColor::gray, _layName2Id[layName]);
+                }
+                }
             } else if (data.substr(0,6) == "Circle") {
                 string netName;
                 stringstream sNetName;
@@ -441,6 +468,8 @@ void Parser::parseShape() {
                 radius = extractDouble(ss, 2);
                 // construct circle
                 shape = new Circle(ctrX, ctrY, radius, _plot);
+                if (!shape->outBox(0, _boardWidth, 0, _boardHeight)) {
+                //     shape->trim(0, _boardWidth, 0, _boardHeight);
                 if (netName == "+VCCCORE+") {
                     shape->plot(SVGPlotColor::green, _layName2Id[layName]);
                 } else if (netName == "+VCCGT+") {
@@ -450,16 +479,22 @@ void Parser::parseShape() {
                 } else {
                     // shape->plot(SVGPlotColor::gray, _layName2Id[layName]);
                 }
+                }
+                // new line
+                getline(_fin, data);
+                ss.str(data);
+            } else if (data.substr(0,3) == "Box") {
                 // new line
                 getline(_fin, data);
                 ss.str(data);
             }
             
-            if(data.substr(0,7) == "Polygon" || data.substr(0,6) == "Circle") {
+            if(data.substr(0,7) == "Polygon" || data.substr(0,6) == "Circle" || data.substr(0,3) == "Box") {
                 isShape = true;
             } else {
                 isShape = false;
-                break;
+                assert(data.substr(0,9) == ".EndShape");
+                // break;
             }
         }
     }
@@ -557,6 +592,7 @@ string Parser::parseNodeTrace() {
         width = extractDouble(ss, 2);
         // cerr << "width = " << width << endl;
         Shape* shape = new Trace(_db.vDBNode(nodeSName)->node(), _db.vDBNode(nodeTName)->node(), width, _plot);
+        if (!shape->outBox(0, _boardWidth, 0, _boardHeight)) {
         if (netName == "+VCCCORE+") {
             shape->plot(SVGPlotColor::green, _db.vDBNode(nodeSName)->layId());
         } else if (netName == "+VCCGT+") {
@@ -565,6 +601,7 @@ string Parser::parseNodeTrace() {
             shape->plot(SVGPlotColor::purple, _db.vDBNode(nodeSName)->layId());
         } else {
             // shape->plot(SVGPlotColor::black, _db.vDBNode(nodeSName)->layId());
+        }
         }
 
         getline(_fin, data);

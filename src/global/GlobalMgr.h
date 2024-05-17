@@ -39,7 +39,7 @@ class GlobalMgr {
 
         void plotDB();
         void buildTestOASG();
-        void buildOASG();
+        void buildOASG(bool case5);
         void buildOASGXObs();
 
         bool isSegmentIntersectingWithObstacles(OASGNode* a, OASGNode* b, vector<vector<OASGNode*> > obstacle);

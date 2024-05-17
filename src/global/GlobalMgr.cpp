@@ -396,7 +396,7 @@ bool GlobalMgr::edgeExist(int netId, int layerId, OASGNode* a, OASGNode* b){
 //Therefore, there will be bug when encountering polygon with number of vertices greater than 4.
 //Bug 2: Now there's only one obstacle, when we have more than 1, we will create redundant obstacle loop for other obstacles that is not connected.
 
-void GlobalMgr::buildOASG() {
+void GlobalMgr::buildOASG(bool case5) {
     // TODO for Lo:
     // for each layer, for each net, use addOASGNode() and addOASGEdge() to construct a crossing OASG
     // in the later stage, all possible paths from the source to target ports and from target ports to lower-voltage target ports will be searched by DFS
@@ -406,7 +406,7 @@ void GlobalMgr::buildOASG() {
     cout << "########################################\n";
 
     //Case 5 來不及debug 先加入一個手拉的
-    bool case5 = true;
+    // bool case5 = false;
     
     //Create viaOASGNodes
     //3 dim, 1dim =  netId, 2dim = Source vias and then targets' vias, 3dim = 4points
