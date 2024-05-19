@@ -160,13 +160,13 @@ class DB {
         }
 
         void addSPort(size_t netId, double voltage, double current) {
-            Port* port = new Port(_vPort.size(), -1, voltage, current);
+            Port* port = new Port(_vPort.size(), -1, voltage, current, _vMetalLayer.size());
             _vPort.push_back(port);
             _vNet[netId]->addSPort(port);
         }
 
         void addTPort(size_t netId, double voltage, double current) {
-            Port* port = new Port(_vPort.size(), _vNet[netId]->numTPorts(), voltage, current);
+            Port* port = new Port(_vPort.size(), _vNet[netId]->numTPorts(), voltage, current, _vMetalLayer.size());
             _vPort.push_back(port);
             _vNet[netId]->addTPort(port);
         }
@@ -263,6 +263,27 @@ class DB {
             cerr << "}" << endl;
 
         }
+
+        // void setPortinFRegion(FRegion* fRegion, size_t netId, size_t portId){
+        //     if (portId == 0) {
+        //         fRegion->addPort(_vNet[netId]->sourcePort());
+        //         _vNet[netId]->sourcePort()->viaCluster()->setFRegion(fRegion);
+        //     } else {
+        //         fRegion->addPort(_vNet[netId]->targetPort(portId-1));
+        //         _vNet[netId]->targetPort(portId-1)->viaCluster()->setFRegion(fRegion);
+        //     }
+        // }
+
+        void setPortinFRegion(size_t layId, int fRegionId, size_t netId, size_t portId){
+            FRegion* fRegion = _vMetalLayer[layId]->vFRegion(fRegionId);
+            if (portId == 0) {
+                fRegion->addPort(_vNet[netId]->sourcePort());
+                _vNet[netId]->sourcePort()->setFRegionId(fRegionId, layId);
+            } else {
+                fRegion->addPort(_vNet[netId]->targetPort(portId-1));
+                _vNet[netId]->targetPort(portId-1)->setFRegionId(fRegionId, layId);
+            }
+        }
         
     private:
         vector<Net*>         _vNet;
@@ -290,6 +311,8 @@ class DB {
         vector< vector< string > > _vSNode; // index = [netId] [sNodeId]
         vector< vector< string > > _vTNode; // index = [netId] [tNodeId]
         PadStack* _VIA16D8A24;
+
+        vector<FRegion*> _vFRegion;
 };
 
 #endif

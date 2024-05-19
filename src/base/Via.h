@@ -95,13 +95,14 @@ class Via{
 
 class ViaCluster{
     public:
-        ViaCluster() {}
+        ViaCluster() {_vVia.clear(); _vFRegionId.clear();}
         ~ViaCluster() {}
 
         Via*    vVia(int viaId) const { return _vVia[viaId]; }
         size_t  numVias()       const { return _vVia.size(); }
         size_t  netId()         const { return _vVia[0]->netId(); }
         ViaType viaType()       const { return _vVia[0]->viaType(); }
+        int fRegionId(size_t layId) const { return _vFRegionId[layId]; }
         // unsigned int nodeId() const { return _nodeId; }
         // double centerRowId() {
         //     double cRowId = 0;
@@ -141,6 +142,7 @@ class ViaCluster{
 
         void addVia(Via* v) { _vVia.push_back(v); }
         // void setNodeId(unsigned int nodeId) { _nodeId = nodeId; }
+        void setFRegionId(int fRegionId, size_t layId) { _vFRegionId[layId] = fRegionId; }
         void print() {
             cerr << "ViaCluster {vVia=" << endl;
             for (size_t viaId = 0; viaId < _vVia.size(); ++ viaId) {
@@ -151,6 +153,7 @@ class ViaCluster{
     private:
         vector<Via*> _vVia;
         // unsigned int _nodeId;
+        vector<int> _vFRegionId;    // index = [layId], assigned in 3D OASG generation
 };
 
 #endif

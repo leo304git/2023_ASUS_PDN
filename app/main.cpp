@@ -143,27 +143,33 @@ int main(int argc, char* argv[]){
     // SVGPlot plot(fout, boardWidth, boardHeight, gridWidth, numLayers, 10.0);
     SVGPlot plot(fout, 10.0);
     DB db(plot);
+    PreMgr preMgr(db, plot);
 
     // db.setBoundary(boardWidth, boardHeight);
     db.setFlowWeight(0.5, 0.5);
     // Parser parser(finST, fin, finOb, db, offsetX, offsetY, plot);
-    Parser parser(finST, fin, finOb, db, plot);
+    // Parser parser(finST, fin, finOb, db, plot);
+    Parser parser(finST, fin, finOb, preMgr, db, plot);
     parser.parse();
 
-     //time
-    time_t start, end;
-    time(&start);
-
     // // NetworkMgr mgr(db, plot);
-    PreMgr preMgr(db, plot);
+    preMgr.initialize();
 
     preMgr.nodeClustering();
 
     preMgr.assignPortPolygon();
 
-    preMgr.plotBoundBox();
+    // preMgr.plotBoundBox();
 
-    
+    preMgr.clearPortGrid();
+    preMgr.spareRailSpace();
+    // preMgr.plotPreGrid();
+    preMgr.plotFRegion();
+
+/*
+    //time
+    time_t start, end;
+    time(&start);
 
     // // // replace this line with a real parser function
     // // parser.testInitialize(boardWidth, boardHeight, gridWidth);
@@ -194,7 +200,8 @@ int main(int argc, char* argv[]){
     globalMgr.buildTestNCOASG();
     // globalMgr.plotNCOASG();
     // // globalMgr.voltageAssignment();
-    // /*
+*/
+/*
     globalMgr.genCapConstrs();
     globalMgr.setUBViaArea(detailedMgr->vNetPortGrid());
     try {
@@ -222,8 +229,8 @@ int main(int argc, char* argv[]){
         cerr << e.getMessage() << endl;
     }
     // globalMgr.plotCurrentPaths();
-    // */
-    // /*
+*/
+/*
     // DetailedMgr detailedMgr(db, plot, 2 * db.VIA16D8A24()->drillRadius());
     delete detailedMgr;
     detailedMgr = new DetailedMgr(db, plot, 2 * db.VIA16D8A24()->drillRadius());
@@ -276,7 +283,7 @@ int main(int argc, char* argv[]){
     detailedMgr->printResult();
 
     cout << "Time : " << hour << " hours " << min <<" mins "<< fixed << setprecision(5) << time_used << " sec " << endl; 
-// */
+*/
 
     // // mgr.genRGraph();
     // // // mgr.drawRGraph();
@@ -286,5 +293,6 @@ int main(int argc, char* argv[]){
     // // // mgr.drawRGraph(true);
     // // mgr.drawDB();
     // // fout.close();
+
     return 0;
 }

@@ -182,12 +182,15 @@ void Parser::parse() {
 
     // parse shape
     _fin.seekg(_fin.beg);
-    // parseShape();
+    parseShape();
     data = parseNodeTrace();
     // parseVia(data);
     // getline(_fin, data);
     // cerr << "before parseConnect: " << data << endl;
     parseConnect();
+    // _preMgr.clearPortGrid();
+    // _preMgr.spareRailSpace();
+    // _preMgr.plotPreGrid();
     parseObstacle();
 
 }
@@ -208,6 +211,11 @@ void Parser::parseST() {
     _finST >> word;
     assert(word == "offsetY");
     _finST >> _offsetY;
+    _finST >> word;
+    assert(word == "gridWidth");
+    double gridWidth;
+    _finST >> gridWidth;
+    _preMgr.initPreGrid(gridWidth);
 
     _finST >> word;
     assert(word == "#Nets");
@@ -431,6 +439,8 @@ void Parser::parseShape() {
                     ss.str(data);
                 }
                 shape = new Polygon(vVtx, _plot);
+                Polygon* poly = dynamic_cast<Polygon*>(shape);
+                if (netName.find("-") == string::npos) {
                 if (!shape->outBox(0, _boardWidth, 0, _boardHeight)) {
                     shape->trim(0, _boardWidth, 0, _boardHeight);
                 if (netName == "+VCCCORE+") {
@@ -440,9 +450,12 @@ void Parser::parseShape() {
                 } else if (netName == "+VCCSA+") {
                     shape->plot(SVGPlotColor::purple, _layName2Id[layName]);
                 } else if (netName == "GND+") {
-                    shape->plot(SVGPlotColor::blue, _layName2Id[layName]);
+                    shape->plot(SVGPlotColor::gray, _layName2Id[layName]);
+                    _preMgr.fillPolygonGrid(_layName2Id[layName], poly, netName);
                 } else {
                     shape->plot(SVGPlotColor::gray, _layName2Id[layName]);
+                    _preMgr.fillPolygonGrid(_layName2Id[layName], poly, netName);
+                }
                 }
                 }
             } else if (data.substr(0,6) == "Circle") {
@@ -469,7 +482,7 @@ void Parser::parseShape() {
                 // construct circle
                 shape = new Circle(ctrX, ctrY, radius, _plot);
                 if (!shape->outBox(0, _boardWidth, 0, _boardHeight)) {
-                //     shape->trim(0, _boardWidth, 0, _boardHeight);
+                    shape->trim(0, _boardWidth, 0, _boardHeight);
                 if (netName == "+VCCCORE+") {
                     shape->plot(SVGPlotColor::green, _layName2Id[layName]);
                 } else if (netName == "+VCCGT+") {
@@ -477,7 +490,7 @@ void Parser::parseShape() {
                 } else if (netName == "+VCCSA+") {
                     shape->plot(SVGPlotColor::purple, _layName2Id[layName]);
                 } else {
-                    // shape->plot(SVGPlotColor::gray, _layName2Id[layName]);
+                    shape->plot(SVGPlotColor::gray, _layName2Id[layName]);
                 }
                 }
                 // new line
@@ -591,7 +604,7 @@ string Parser::parseNodeTrace() {
         assert (garbage == "=");
         width = extractDouble(ss, 2);
         // cerr << "width = " << width << endl;
-        Shape* shape = new Trace(_db.vDBNode(nodeSName)->node(), _db.vDBNode(nodeTName)->node(), width, _plot);
+        Trace* shape = new Trace(_db.vDBNode(nodeSName)->node(), _db.vDBNode(nodeTName)->node(), width, _plot);
         if (!shape->outBox(0, _boardWidth, 0, _boardHeight)) {
         if (netName == "+VCCCORE+") {
             shape->plot(SVGPlotColor::green, _db.vDBNode(nodeSName)->layId());
@@ -600,7 +613,10 @@ string Parser::parseNodeTrace() {
         } else if (netName == "+VCCSA+") {
             shape->plot(SVGPlotColor::purple, _db.vDBNode(nodeSName)->layId());
         } else {
-            // shape->plot(SVGPlotColor::black, _db.vDBNode(nodeSName)->layId());
+            shape->plot(SVGPlotColor::black, _db.vDBNode(nodeSName)->layId());
+            _preMgr.fillLineGridXArch(_db.vDBNode(nodeSName)->layId(), _db.vDBNode(nodeSName)->node()->ctrX(), _db.vDBNode(nodeSName)->node()->ctrY(), 
+                                                                  _db.vDBNode(nodeTName)->node()->ctrX(), _db.vDBNode(nodeTName)->node()->ctrY(),
+                                                                  nodeSName+"_"+nodeTName);
         }
         }
 
