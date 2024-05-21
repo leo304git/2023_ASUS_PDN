@@ -666,6 +666,6 @@ double AStarRouter::pathLength(int threshold, int method) {
     // i for pattern matching 
 
     //這裡沒有return 東西
-        
-
+    assert(false);    
+    return 0;
 }

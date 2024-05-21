@@ -63,6 +63,7 @@ class PreMgr {
         void spareRailSpace();
         FRegion* constructFRegion(size_t netId, size_t layId, size_t portId, size_t fRegionId, const vector< pair<int, int> >& vContour);
         void plotFRegion();
+        void constructInterFRegion();
         
     private:
         void kMeansClustering(size_t netId, vector<DBNode*> vNode, int numEpochs, int k);

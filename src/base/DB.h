@@ -213,6 +213,11 @@ class DB {
             addObstacle(layId, vShape);
         }
 
+        void addInterFRegion(Polygon* poly) {
+            FRegion* fRegion = new FRegion(poly);
+            _vInterFRegion.push_back(fRegion);
+        }
+
         void setFlowWeight(double areaWeight, double viaWeight) {
             _areaWeight = areaWeight;
             _viaWeight = viaWeight;
@@ -312,7 +317,7 @@ class DB {
         vector< vector< string > > _vTNode; // index = [netId] [tNodeId]
         PadStack* _VIA16D8A24;
 
-        vector<FRegion*> _vFRegion;
+        vector<FRegion*> _vInterFRegion;    // constructed in PreMgr::constructInterFRegion
 };
 
 #endif

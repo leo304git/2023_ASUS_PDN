@@ -643,6 +643,8 @@ FRegion* PreMgr::constructFRegion(size_t netId, size_t layId, size_t portId, siz
             
         }
     }
+    assert(false);
+    return NULL;
 }
 
 void PreMgr::plotFRegion() {
@@ -660,6 +662,37 @@ void PreMgr::plotFRegion() {
         }
     }
     cerr << endl;
+}
+
+void PreMgr::constructInterFRegion() {
+
+    vector<int> spongeLayer = {1,3,4,6,8,9,10};
+    if (_db.numLayers() < 3) return;
+    vector<Polygon*> vPoly1;
+    vector<Polygon*> vPoly2;
+    for (size_t polyId1 = 0; polyId1 < _db.vMetalLayer(0)->numFRegions(); ++ polyId1) {
+        vPoly1.push_back(_db.vMetalLayer(0)->vFRegion(polyId1)->polygon());
+    }
+    for (size_t polyId2 = 0; polyId2 < _db.vMetalLayer(2)->numFRegions(); ++ polyId2) {
+        vPoly2.push_back(_db.vMetalLayer(2)->vFRegion(polyId2)->polygon());
+    }
+    vector<Polygon*> vPoly = Polygon::intersection(vPoly1, vPoly2);
+    for (size_t layId = 3; layId < _db.numLayers(); ++ layId) {
+        if (find(spongeLayer.begin(), spongeLayer.end(), layId) != spongeLayer.end()) continue;
+        vPoly1.clear();
+        for (size_t polyId1 = 0; polyId1 < _db.vMetalLayer(layId)->numFRegions(); ++ polyId1) {
+            vPoly1.push_back(_db.vMetalLayer(layId)->vFRegion(polyId1)->polygon());
+        }
+        vPoly = Polygon::intersection(vPoly1, vPoly);
+    }
+    // Polygon* p2 = _db.vMetalLayer(2)->vFRegion(1)->polygon();
+    // Polygon* p1 = _db.vMetalLayer(0)->vFRegion(0)->polygon();
+    // vector<Polygon*> vPoly = p1->intersection(p2);
+    for (size_t polyId = 0; polyId < vPoly.size(); ++ polyId) {
+        vPoly[polyId]->plot(SVGPlotColor::blue, 0);
+        _db.addInterFRegion(vPoly[polyId]);
+    }
+    
 }
 
 void PreMgr::kMeansClustering(size_t netId, vector<DBNode*> vNode, int numEpochs, int k) {

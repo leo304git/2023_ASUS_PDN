@@ -3,7 +3,12 @@
 
 #include "Include.h"
 #include "SVGPlot.h"
+#include <boost/geometry.hpp>
+#include <boost/geometry/geometries/point_xy.hpp>
+#include <boost/geometry/geometries/polygon.hpp>
+#include <boost/foreach.hpp>
 using namespace std;
+namespace bg = boost::geometry;
 
 class Shape {
     public:
@@ -166,6 +171,82 @@ class Polygon : public Shape {
             //     return true;
             // }
             return trimmed;
+        }
+
+        vector<Polygon*> intersection(Polygon* poly) {
+            typedef bg::model::d2::point_xy<double> bgPoint;
+            typedef bg::model::polygon<bgPoint> bgPolygon;
+            bgPolygon bgPoly1;
+            bgPolygon bgPoly2;
+            for (size_t vtxId = 0; vtxId < _vVtx.size(); ++ vtxId) {
+                bg::append(bgPoly1.outer(), bgPoint(_vVtx[vtxId].first, _vVtx[vtxId].second));
+            }
+            for (size_t vtxId = 0; vtxId < poly->numVtcs(); ++ vtxId) {
+                bg::append(bgPoly2.outer(), bgPoint(poly->vtxX(vtxId), poly->vtxY(vtxId)));
+            }
+            bg::correct(bgPoly1);
+            bg::correct(bgPoly2);
+
+            vector<Polygon*> vPoly;
+
+            bg::model::multi_polygon<bgPolygon>  bgMultiPoly;
+            // std::deque<bgPolygon> bgMultiPoly;
+            bg::intersection(bgPoly1, bgPoly2, bgMultiPoly);
+
+            BOOST_FOREACH(bgPolygon const& bgPoly, bgMultiPoly) {
+                vector< pair<double, double> > vPolyVtx;
+                for(auto it = boost::begin(bgPoly.outer()); it != boost::end(bgPoly.outer()); ++it) {
+                    double x = bg::get<0>(*it);
+                    double y = bg::get<1>(*it);
+                    vPolyVtx.push_back(make_pair(x, y));
+                }
+                Polygon* interPoly = new Polygon(vPolyVtx, _plot);
+                vPoly.push_back(interPoly);
+            }
+            
+            return vPoly;
+        }
+
+        static vector<Polygon*> intersection(vector<Polygon*> vPoly1, vector<Polygon*> vPoly2) {
+            typedef bg::model::d2::point_xy<double> bgPoint;
+            typedef bg::model::polygon<bgPoint> bgPolygon;
+            typedef bg::model::multi_polygon<bgPolygon> bgMultiPolygon;
+            // vector<bgPolygon> bgPoly1;
+            // vector<bgPolygon> bgPoly2;
+            bgMultiPolygon bgMultiPoly1;
+            bgMultiPolygon bgMultiPoly2;
+            for (size_t polyId = 0; polyId < vPoly1.size(); ++ polyId) {
+                bgPolygon bgPoly;
+                for (size_t vtxId = 0; vtxId < vPoly1[polyId]->numVtcs(); ++ vtxId) {
+                    bg::append(bgPoly.outer(), bgPoint(vPoly1[polyId]->vtxX(vtxId), vPoly1[polyId]->vtxY(vtxId)));
+                }
+                bg::correct(bgPoly);
+                bgMultiPoly1.push_back(bgPoly);
+            }
+            for (size_t polyId = 0; polyId < vPoly2.size(); ++ polyId) {
+                bgPolygon bgPoly;
+                for (size_t vtxId = 0; vtxId < vPoly2[polyId]->numVtcs(); ++ vtxId) {
+                    bg::append(bgPoly.outer(), bgPoint(vPoly2[polyId]->vtxX(vtxId), vPoly2[polyId]->vtxY(vtxId)));
+                }
+                bg::correct(bgPoly);
+                bgMultiPoly2.push_back(bgPoly);
+            }
+
+            bgMultiPolygon bgMultiPoly;
+            vector<Polygon*> vPoly;
+            bg::intersection(bgMultiPoly1, bgMultiPoly2, bgMultiPoly);
+
+            BOOST_FOREACH(bgPolygon const& bgPoly, bgMultiPoly) {
+                vector< pair<double, double> > vPolyVtx;
+                for(auto it = boost::begin(bgPoly.outer()); it != boost::end(bgPoly.outer()); ++it) {
+                    double x = bg::get<0>(*it);
+                    double y = bg::get<1>(*it);
+                    vPolyVtx.push_back(make_pair(x, y));
+                }
+                Polygon* interPoly = new Polygon(vPolyVtx, vPoly1[0]->_plot);
+                vPoly.push_back(interPoly);
+            }
+            return vPoly;
         }
     private:
         vector< pair<double, double> > _vVtx;

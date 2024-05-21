@@ -165,6 +165,7 @@ int main(int argc, char* argv[]){
     preMgr.spareRailSpace();
     // preMgr.plotPreGrid();
     preMgr.plotFRegion();
+    preMgr.constructInterFRegion();
 
 /*
     //time
