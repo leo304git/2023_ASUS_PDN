@@ -18,8 +18,8 @@ enum OASGNodeType {
 
 class OASGNode {
     public:
-        OASGNode(size_t nodeId, size_t nPortNodeId, size_t netId, double x, double y, OASGNodeType type, Port* port = NULL, bool nPort = true)
-        : _nodeId(nodeId), _nPortNodeId(nPortNodeId), _netId(netId), _x(x), _y(y), _nodeType(type), _port(port), _nPort(nPort) {
+        OASGNode(size_t nodeId, size_t nPortNodeId, size_t netId, size_t layId, double x, double y, OASGNodeType type, Port* port = NULL, bool nPort = true)
+        : _nodeId(nodeId), _nPortNodeId(nPortNodeId), _netId(netId), _layId(layId), _x(x), _y(y), _nodeType(type), _port(port), _nPort(nPort) {
             _redundant = false;
             _vOutEdgeId.clear();
             _vInEdgeId.clear();
@@ -39,6 +39,7 @@ class OASGNode {
         size_t nodeId() const { return _nodeId; }
         size_t nPortNodeId() const { return _nPortNodeId; }
         size_t netId() const { return _netId; }
+        size_t layId() const { return _layId; }
         bool nPort() const { return _nPort; }
         bool redundant() const { return _redundant; }
 
@@ -88,6 +89,7 @@ class OASGNode {
         size_t _nodeId;
         size_t _nPortNodeId;   // non-port node index in RGraph._vNPortOASGNode[netId]
         size_t _netId;
+        size_t _layId;
         bool _nPort;        // true if this node is not on layer0 of a source/target via cluster (i.e. not connected directly to a port)
         bool _redundant;    // true if this node has no current passing through
 };
@@ -195,9 +197,9 @@ class OASGEdge {
         }
 
         void print() {
-            cerr << "OASGEdge[" << _OASGEdgeId << "], length=" << _length << ", (" << _sNode->x()/40 << " " << _sNode->y()/40 << ") -> (" << _tNode->x()/40 << " " << _tNode->y()/40 << ")" << endl;
-            cerr << "bPolygon = ";
-            _boundPolygon->print();
+            cerr << "OASGEdge[" << _OASGEdgeId << "], length=" << _length << ", (" << _sNode->x() << " " << _sNode->y() << ") -> (" << _tNode->x() << " " << _tNode->y() << ")" << endl;
+            // cerr << "bPolygon = ";
+            // _boundPolygon->print();
         }
 
         // void setNode(size_t sNodeId, size_t tNodeId) { _sNodeId = sNodeId; _tNodeId = tNodeId; }
@@ -313,11 +315,12 @@ class RGraph {
         // after OASG coonstruction, before layer distribution
         void constructRGraph();
         vector< vector<OASGEdge*> > DFS(OASGNode* node, size_t netId);
-        OASGNode* addOASGNode(size_t netId, double x, double y, OASGNodeType type, Port* port = NULL, bool nPort = true);
+        OASGNode* addOASGNode(size_t netId, size_t layId, double x, double y, OASGNodeType type, Port* port = NULL, bool nPort = true);
         size_t addOASGEdge(size_t netId, size_t layId, OASGNode* sNode, OASGNode* tNode, bool viaEdge);
         size_t addViaOASGEdge(size_t netId, size_t layId, OASGNode* sNode, OASGNode* tNode, Polygon* boundPolygon);
         void swapST(OASGEdge* edge);
         // void addRGEdge(RGEdge* edge, size_t twoPinNetId, size_t layId, size_t RGEdgeId) { _vRGEdge[twoPinNetId][layId][RGEdgeId] = edge; }
+        void print();
     private:
         RGraphType _type;
         // vector<size_t> _vSNodeId;   // index = [netId]
@@ -335,6 +338,7 @@ class RGraph {
         vector< vector< vector<OASGNode*> > > _vTargetOASGNode;     // nodes of the target via clusters index = [netId] [netTPortId] [layId]
         // vector< vector<OASGNode*> > _vMiddleOASGNode;   // nodes other than the source or target ones, index = [layId] [middleNodeId]
         vector< vector<OASGNode*> > _vNPortOASGNode;    // nodes that are not connected directly to ports, index = [netId] [nPortNodeId]
+        vector< vector< vector<OASGNode*> > > _vNetLayerOASGNode;   // nodes of the net on each layer, index = [netId] [layId] [nodeId]
 
         vector<OASGEdge*> _vOASGEdge;   // all OASGEdges of all nets
         vector< vector< vector<OASGEdge*> > > _vPlaneOASGEdge;   // horizontal OASGEdges, index = [netId] [layId] [typeEdgeId]

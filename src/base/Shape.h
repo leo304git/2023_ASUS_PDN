@@ -3,7 +3,12 @@
 
 #include "Include.h"
 #include "SVGPlot.h"
+#include <boost/geometry.hpp>
+#include <boost/geometry/geometries/point_xy.hpp>
+#include <boost/geometry/geometries/polygon.hpp>
+#include <boost/foreach.hpp>
 using namespace std;
+namespace bg = boost::geometry;
 
 class Shape {
     public:
@@ -24,6 +29,13 @@ class Shape {
         virtual double bPolygonX(size_t vtxId) { double bPolygonX; return bPolygonX;}
         virtual double bPolygonY(size_t vtxId) { double bPolygonY; return bPolygonY;}
         virtual size_t numBPolyVtcs() { size_t numBPolyVtcs; return numBPolyVtcs;}
+        virtual vector<pair<double, double>> bPolygon() {
+            vector<pair<double, double>> bPolygon;
+            for (size_t vtxId = 0; vtxId < numBPolyVtcs(); ++ vtxId) {
+                bPolygon.push_back(make_pair(bPolygonX(vtxId), bPolygonY(vtxId)));
+            }
+            return bPolygon;
+        }
         virtual bool enclose(double x, double y);
         virtual double area() { double area; return area;}
         virtual bool outBox(double lowerX, double upperX, double lowerY, double upperY) {
@@ -34,6 +46,7 @@ class Shape {
             }
         }
         virtual bool trim(double lowerX, double upperX, double lowerY, double upperY) {return false;}
+        virtual bool intersect(double x1, double y1, double x2, double y2) {return false;}
     protected:
         SVGPlot& _plot;
         // pair<double, double> _center;
@@ -41,7 +54,21 @@ class Shape {
 
 class Polygon : public Shape {
     public:
-        Polygon(vector< pair<double, double> > vVtx, SVGPlot& plot) : _vVtx(vVtx), Shape(plot) {}
+        Polygon(vector< pair<double, double> > vVtx, SVGPlot& plot) : _vVtx(vVtx), Shape(plot) {
+            // check counter clockwise
+            double sum = 0;
+            for (size_t vtxId = 0; vtxId < vVtx.size(); ++ vtxId) {
+                double x1 = vVtx[vtxId].first;
+                double y1 = vVtx[vtxId].second;
+                double x2 = vVtx[(vtxId+1)%vVtx.size()].first;
+                double y2 = vVtx[(vtxId+1)%vVtx.size()].second;
+                sum += (x2-x1) * (y2+y1);
+            }
+            // assert(sum < 0);
+            if (sum > 0) {
+                reverse(_vVtx.begin(), _vVtx.end());
+            }
+        }
         ~Polygon(){}
         size_t numVtcs() const { return _vVtx.size(); }
         double vtxX(size_t vtxIdx) const { return _vVtx[vtxIdx].first;}
@@ -109,6 +136,7 @@ class Polygon : public Shape {
         double bPolygonX(size_t vtxId) { return _vVtx[vtxId].first; }
         double bPolygonY(size_t vtxId) { return _vVtx[vtxId].second; }
         size_t numBPolyVtcs() { return _vVtx.size(); }
+        vector<pair<double, double>> bPolygon() { return _vVtx; }
         double area() {
             // reference: https://www.geeksforgeeks.org/area-of-a-polygon-with-given-n-ordered-vertices/
             // Initialize area
@@ -166,6 +194,21 @@ class Polygon : public Shape {
             //     return true;
             // }
             return trimmed;
+        }
+        bool intersect(double x1, double y1, double x2, double y2) {
+            assert(!enclose(x1, y1) && !enclose(x2, y2));
+            typedef bg::model::d2::point_xy<double> bgPoint;
+            typedef boost::geometry::model::segment<bgPoint> bgLine;
+            typedef bg::model::polygon<bgPoint> bgPolygon;
+            bgLine bgLine1(bgPoint(x1, y1), bgPoint(x2, y2));
+            bgPolygon bgPoly1;
+            for (size_t vtxId = 0; vtxId < _vVtx.size(); ++ vtxId) {
+                bg::append(bgPoly1.outer(), bgPoint(_vVtx[vtxId].first, _vVtx[vtxId].second));
+            }
+            
+            bg::correct(bgPoly1);
+
+            return bg::intersects(bgPoly1, bgLine1);
         }
     private:
         vector< pair<double, double> > _vVtx;

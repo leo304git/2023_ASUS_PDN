@@ -184,17 +184,19 @@ int main(int argc, char* argv[]){
     // // globalMgr.buildTestOASG();
 
     
-    globalMgr.buildOASG(string(argv[3]).find('5') != std::string::npos);
+    // globalMgr.buildOASG(string(argv[3]).find('5') != std::string::npos);
+    globalMgr.buildNewOASG();
+    // globalMgr.trimOASG();
 
     // globalMgr.buildOASGXObs();
-    // globalMgr.plotOASG();
+    globalMgr.plotOASG();
     
-    globalMgr.layerDistribution();
+    // globalMgr.layerDistribution();
     // // //globalMgr.plotRGraph();
-    globalMgr.buildTestNCOASG();
+    // globalMgr.buildTestNCOASG();
     // globalMgr.plotNCOASG();
     // // globalMgr.voltageAssignment();
-    // /*
+/*
     globalMgr.genCapConstrs();
     globalMgr.setUBViaArea(detailedMgr->vNetPortGrid());
     try {
@@ -222,8 +224,8 @@ int main(int argc, char* argv[]){
         cerr << e.getMessage() << endl;
     }
     // globalMgr.plotCurrentPaths();
-    // */
-    // /*
+*/
+/*
     // DetailedMgr detailedMgr(db, plot, 2 * db.VIA16D8A24()->drillRadius());
     delete detailedMgr;
     detailedMgr = new DetailedMgr(db, plot, 2 * db.VIA16D8A24()->drillRadius());
@@ -276,7 +278,7 @@ int main(int argc, char* argv[]){
     detailedMgr->printResult();
 
     cout << "Time : " << hour << " hours " << min <<" mins "<< fixed << setprecision(5) << time_used << " sec " << endl; 
-// */
+*/
 
     // // mgr.genRGraph();
     // // // mgr.drawRGraph();

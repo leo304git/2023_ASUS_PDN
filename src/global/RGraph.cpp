@@ -6,6 +6,15 @@ void RGraph::initRGraph(DB db) {
     _numLayers = db.numLayers();
     _numNets = db.numNets();
 
+    for (size_t netId = 0; netId < db.numNets(); ++ netId) {
+        vector< vector<OASGNode*> > netLayerNode;
+        for (size_t layId = 0; layId < db.numLayers(); ++ layId) {
+            vector<OASGNode*> layerNode;
+            netLayerNode.push_back(layerNode);
+        }
+        _vNetLayerOASGNode.push_back(netLayerNode);
+    }
+
     // OASG info (ports and nodes)
     for (size_t netId = 0; netId < db.numNets(); ++ netId) {
         Net* net = db.vNet(netId);
@@ -20,10 +29,10 @@ void RGraph::initRGraph(DB db) {
             OASGNode* node;
             if (layId == 0) {
                 // node = addOASGNode(netId, net->sourceViaCstr()->centerX(), net->sourceViaCstr()->centerY(), OASGNodeType::SOURCE, net->sourcePort(), false);
-                node = addOASGNode(netId, net->sourcePort()->boundPolygon()->ctrX(), net->sourcePort()->boundPolygon()->ctrY(), OASGNodeType::SOURCE, net->sourcePort(), false);
+                node = addOASGNode(netId, layId, net->sourcePort()->boundPolygon()->ctrX(), net->sourcePort()->boundPolygon()->ctrY(), OASGNodeType::SOURCE, net->sourcePort(), false);
             } else {
                 // node = addOASGNode(netId, net->sourceViaCstr()->centerX(), net->sourceViaCstr()->centerY(), OASGNodeType::SOURCE, net->sourcePort(), true);
-                node = addOASGNode(netId, net->sourcePort()->boundPolygon()->ctrX(), net->sourcePort()->boundPolygon()->ctrY(), OASGNodeType::SOURCE, net->sourcePort(), true);
+                node = addOASGNode(netId, layId, net->sourcePort()->boundPolygon()->ctrX(), net->sourcePort()->boundPolygon()->ctrY(), OASGNodeType::SOURCE, net->sourcePort(), true);
             }
             
             // OASGNode* node = new OASGNode(net->sourceViaCstr()->centerX(), net->sourceViaCstr()->centerY(), OASGNodeType::SOURCE, net->sourcePort());
@@ -42,10 +51,10 @@ void RGraph::initRGraph(DB db) {
                 OASGNode* node;
                 if (layId == 0) {
                     // node = addOASGNode(netId, net->vTargetViaCstr(netTPortId)->centerX(), net->vTargetViaCstr(netTPortId)->centerY(), OASGNodeType::TARGET, net->targetPort(netTPortId), false);
-                    node = addOASGNode(netId, net->targetPort(netTPortId)->boundPolygon()->ctrX(), net->targetPort(netTPortId)->boundPolygon()->ctrY(), OASGNodeType::TARGET, net->targetPort(netTPortId), false);
+                    node = addOASGNode(netId, layId, net->targetPort(netTPortId)->boundPolygon()->ctrX(), net->targetPort(netTPortId)->boundPolygon()->ctrY(), OASGNodeType::TARGET, net->targetPort(netTPortId), false);
                 } else {
                     // node = addOASGNode(netId, net->vTargetViaCstr(netTPortId)->centerX(), net->vTargetViaCstr(netTPortId)->centerY(), OASGNodeType::TARGET, net->targetPort(netTPortId), true);
-                    node = addOASGNode(netId, net->targetPort(netTPortId)->boundPolygon()->ctrX(), net->targetPort(netTPortId)->boundPolygon()->ctrY(), OASGNodeType::TARGET, net->targetPort(netTPortId), true);
+                    node = addOASGNode(netId, layId, net->targetPort(netTPortId)->boundPolygon()->ctrX(), net->targetPort(netTPortId)->boundPolygon()->ctrY(), OASGNodeType::TARGET, net->targetPort(netTPortId), true);
                 }
                 
                 // OASGNode* node = new OASGNode(net->vTargetViaCstr(netTPortId)->centerX(), net->vTargetViaCstr(netTPortId)->centerY(), OASGNodeType::TARGET, net->targetPort(netTPortId));
@@ -107,6 +116,52 @@ void RGraph::initRGraph(DB db) {
     // vector< vector< vector<OASGEdge*> > > _vPlaneOASGEdge;   // horizontal OASGEdges, index = [netId] [layId] [typeEdgeId]
     // vector< vector< vector<OASGEdge*> > > _vViaOASGEdge;   // vertical OASGEdges between Layer[layId, layId+1], index = [netId] [layId] [typeEdgeId]
 
+    // for (size_t netId = 0; netId <_vSPort.size(); ++ netId) {
+    //     cerr << "_vSPort(net" << netId << "):" << endl;
+    //     _vSPort[netId]->print();
+    //     for (size_t tPortId = 0; tPortId < _vTPort[netId].size(); ++ tPortId) {
+    //         cerr << "_vTPort(net" << netId << ", tPort" << tPortId << "):" << endl;
+    //         _vTPort[netId][tPortId]->print();
+    //     }
+    // }
+
+    // cerr << "_vOASGNode: " << endl;
+    // for (size_t nodeId = 0; nodeId < _vOASGNode.size(); ++ nodeId) {
+    //     _vOASGNode[nodeId]->print();
+    // }
+    // for (size_t netId = 0; netId < numNets(); ++ netId) {
+    //     for (size_t layId = 0; layId < numLayers(); ++ layId) {
+    //         cerr << "_vSourceOASGNode(net" << netId << ", layer" << layId << "):" << endl;
+    //         _vSourceOASGNode[netId][layId]->print(); 
+    //     }
+    //     for (size_t tPortId = 0; tPortId < _vTPort[netId].size(); ++ tPortId) {
+    //         for (size_t layId = 0; layId < numLayers(); ++ layId) {
+    //             cerr << "_vTargetOASGNode(net" << netId << ", tPort" << tPortId << ", layer" << layId << "):" << endl;
+    //             _vTargetOASGNode[netId][tPortId][layId]->print();
+    //         }
+    //     }
+    //     cerr << "_vNPortOASGNode(net" << netId << "):" << endl;
+    //     for (size_t nPortId = 0; nPortId < _vNPortOASGNode[netId].size(); ++ nPortId) {
+    //         _vNPortOASGNode[netId][nPortId]->print();
+    //     }
+    // }
+
+    // cerr << "_vOASGEdge:" << endl;
+    // for (size_t edgeId = 0; edgeId < _vOASGEdge.size(); ++ edgeId) {
+    //     _vOASGEdge[edgeId]->print();
+    // }
+
+    // for (size_t netId = 0; netId < numNets(); ++ netId) {
+    //     for (size_t layId = 0; layId < numLayers(); ++ layId) {
+    //         cerr << "_vViaOASGEdge(net" << netId << ", layer" << layId << "):" << endl;
+    //         for (size_t viaEdgeId = 0; viaEdgeId <_vViaOASGEdge[netId][layId].size(); ++ viaEdgeId) {
+    //             _vViaOASGEdge[netId][layId][viaEdgeId]->print();
+    //         }
+    //     }
+    // }
+}
+
+void RGraph::print() {
     for (size_t netId = 0; netId <_vSPort.size(); ++ netId) {
         cerr << "_vSPort(net" << netId << "):" << endl;
         _vSPort[netId]->print();
@@ -152,11 +207,18 @@ void RGraph::initRGraph(DB db) {
     }
 }
 
-OASGNode* RGraph::addOASGNode(size_t netId, double x, double y, OASGNodeType type, Port* port, bool nPort){
+OASGNode* RGraph::addOASGNode(size_t netId, size_t layId, double x, double y, OASGNodeType type, Port* port, bool nPort){
     // _vOutEdgeId and _vInEdgeId will be set later through addOASGEdge()
     // _voltage will be set in the preporcessing of currentDistribution()
-    OASGNode* node = new OASGNode(_vOASGNode.size(), _vNPortOASGNode[netId].size(), netId, x, y, type, port, nPort);
+    for (size_t nodeId = 0; nodeId < _vNetLayerOASGNode[netId][layId].size(); ++ nodeId) {
+        OASGNode* node = _vNetLayerOASGNode[netId][layId][nodeId];
+        if (node->x() == x && node->y() == y) {
+            return node;
+        }
+    }
+    OASGNode* node = new OASGNode(_vOASGNode.size(), _vNPortOASGNode[netId].size(), netId, layId, x, y, type, port, nPort);
     _vOASGNode.push_back(node);
+    _vNetLayerOASGNode[netId][layId].push_back(node);
     if (nPort) {
         _vNPortOASGNode[netId].push_back(node);
     }
@@ -165,6 +227,16 @@ OASGNode* RGraph::addOASGNode(size_t netId, double x, double y, OASGNodeType typ
 
 size_t RGraph::addOASGEdge(size_t netId, size_t layId, OASGNode* sNode, OASGNode* tNode, bool viaEdge){
     // if viaEdge, layId is layPairId
+    for (size_t outEdgeId = 0; outEdgeId < sNode->numOutEdges(); ++ outEdgeId) {
+        OASGEdge* edge = vOASGEdge(sNode->outEdgeId(outEdgeId));
+        if (edge->tNode() == tNode) {
+            assert(edge->viaEdge() == viaEdge);
+            assert(edge->netId() == netId);
+            assert(edge->layId() == layId);
+            assert(edge->sNode() == sNode);
+            return edge->edgeId();
+        }
+    }
     size_t OASGEdgeId = _vOASGEdge.size();
     size_t typeEdgeId = viaEdge ? _vViaOASGEdge[netId][layId].size() : _vPlaneOASGEdge[netId][layId].size();
     OASGEdge* edge = new OASGEdge(OASGEdgeId, netId, layId, typeEdgeId, sNode, tNode, viaEdge);

@@ -14,11 +14,12 @@ project(
 # If you set any CMAKE_ variables, that can go here.
 # (But usually don't do this, except maybe for C++ standard)
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 # # Find packages go here.
 set(GUROBI_DIR "/work/gurobi1001/linux64")
 set(CPLEX_ROOT_DIR "$ENV{HOME}/.local/cplex")
+set(BOOST_ROOT_DIR "$ENV{HOME}/.local/boost_1_85_0")
 
 # # Add submodules
 # find_package(Git QUIET)

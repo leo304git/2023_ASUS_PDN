@@ -5,6 +5,7 @@
 #include "../base/SVGPlot.h"
 #include "../base/DB.h"
 #include "RGraph.h"
+#include "TopologyMgr.h"
 
 struct CapConstr {
     OASGEdge* e1;
@@ -25,7 +26,7 @@ struct SingleCapConstr {
 class GlobalMgr {
     public:
 
-        GlobalMgr(DB& db, SVGPlot& plot): _db(db), _plot(plot) {
+        GlobalMgr(DB& db, SVGPlot& plot): _db(db), _plot(plot){
             cerr << "numNets = " << _db.numNets() << endl;
             _rGraph.initRGraph(db);
             
@@ -39,6 +40,13 @@ class GlobalMgr {
 
         void plotDB();
         void buildTestOASG();
+        void buildNewOASG() {
+            TopologyMgr topoMgr(_db, _rGraph, _plot);
+            topoMgr.buildOASG(false);
+            // topoMgr.plotOASG();
+            // topoMgr.layerDistribution();
+            // topoMgr.buildNCOASG();
+        }
         void buildOASG(bool case5);
         void buildOASGXObs();
 
@@ -58,6 +66,7 @@ class GlobalMgr {
 
         void plotOASG();
         void plotRGraph();
+        void trimOASG();
         void layerDistribution();
         void buildTestNCOASG();
         void plotNCOASG();
@@ -104,6 +113,7 @@ class GlobalMgr {
         DB& _db;
         SVGPlot& _plot;
         RGraph _rGraph;
+        // TopologyMgr _topoMgr;
         
         vector<CapConstr> _vCapConstr;
         vector<SingleCapConstr> _vSglCapConstr;

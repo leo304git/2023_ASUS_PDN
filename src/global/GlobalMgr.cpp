@@ -31,100 +31,100 @@ void GlobalMgr::plotDB() {
 
 
 void GlobalMgr::buildTestOASG() {
-    cerr << "buildTestOASG..." << endl;
-    // layer0
-    cerr << "layer0..." << endl;
-    OASGNode* lay0_detNode1 = _rGraph.addOASGNode(1, 40, 40, OASGNodeType::MIDDLE);
-    OASGNode* lay0_detNode2 = _rGraph.addOASGNode(1, 40, 52, OASGNodeType::MIDDLE);
-    _rGraph.addOASGEdge(0, 0, _rGraph.sourceOASGNode(0,0), _rGraph.targetOASGNode(0,0,0), false);
-    _rGraph.addOASGEdge(1, 0, _rGraph.sourceOASGNode(1,0), _rGraph.targetOASGNode(1,0,0), false);
-    _rGraph.addOASGEdge(1, 0, _rGraph.sourceOASGNode(1,0), _rGraph.targetOASGNode(1,1,0), false);
-    _rGraph.addOASGEdge(1, 0, _rGraph.targetOASGNode(1,0,0), lay0_detNode1, false);
-    _rGraph.addOASGEdge(1, 0, lay0_detNode1, _rGraph.targetOASGNode(1,1,0), false);
-    _rGraph.addOASGEdge(1, 0, _rGraph.targetOASGNode(1,0,0), lay0_detNode2, false);
-    _rGraph.addOASGEdge(1, 0, lay0_detNode2, _rGraph.targetOASGNode(1,1,0), false);
-    _rGraph.addOASGEdge(2, 0, _rGraph.sourceOASGNode(2,0), _rGraph.targetOASGNode(2,0,0), false);
-    _rGraph.addOASGEdge(2, 0, _rGraph.sourceOASGNode(2,0), _rGraph.targetOASGNode(2,1,0), false);
-    _rGraph.addOASGEdge(2, 0, _rGraph.targetOASGNode(2,0,0), _rGraph.targetOASGNode(2,1,0), false);
+    // cerr << "buildTestOASG..." << endl;
+    // // layer0
+    // cerr << "layer0..." << endl;
+    // OASGNode* lay0_detNode1 = _rGraph.addOASGNode(1, 40, 40, OASGNodeType::MIDDLE);
+    // OASGNode* lay0_detNode2 = _rGraph.addOASGNode(1, 40, 52, OASGNodeType::MIDDLE);
+    // _rGraph.addOASGEdge(0, 0, _rGraph.sourceOASGNode(0,0), _rGraph.targetOASGNode(0,0,0), false);
+    // _rGraph.addOASGEdge(1, 0, _rGraph.sourceOASGNode(1,0), _rGraph.targetOASGNode(1,0,0), false);
+    // _rGraph.addOASGEdge(1, 0, _rGraph.sourceOASGNode(1,0), _rGraph.targetOASGNode(1,1,0), false);
+    // _rGraph.addOASGEdge(1, 0, _rGraph.targetOASGNode(1,0,0), lay0_detNode1, false);
+    // _rGraph.addOASGEdge(1, 0, lay0_detNode1, _rGraph.targetOASGNode(1,1,0), false);
+    // _rGraph.addOASGEdge(1, 0, _rGraph.targetOASGNode(1,0,0), lay0_detNode2, false);
+    // _rGraph.addOASGEdge(1, 0, lay0_detNode2, _rGraph.targetOASGNode(1,1,0), false);
+    // _rGraph.addOASGEdge(2, 0, _rGraph.sourceOASGNode(2,0), _rGraph.targetOASGNode(2,0,0), false);
+    // _rGraph.addOASGEdge(2, 0, _rGraph.sourceOASGNode(2,0), _rGraph.targetOASGNode(2,1,0), false);
+    // _rGraph.addOASGEdge(2, 0, _rGraph.targetOASGNode(2,0,0), _rGraph.targetOASGNode(2,1,0), false);
 
-    // layer1
-    cerr << "layer1..." << endl;
-    OASGNode* lay1_obsNode1 = _rGraph.addOASGNode(2, 32, 56, OASGNodeType::MIDDLE);
-    OASGNode* lay1_obsNode2 = _rGraph.addOASGNode(2, 48, 56, OASGNodeType::MIDDLE);
-    OASGNode* lay1_obsNode3 = _rGraph.addOASGNode(2, 48, 60, OASGNodeType::MIDDLE);
-    OASGNode* lay1_obsNode4 = _rGraph.addOASGNode(2, 32, 60, OASGNodeType::MIDDLE);
-    OASGNode* lay1_detNode1 = _rGraph.addOASGNode(1, 40, 40, OASGNodeType::MIDDLE);
-    OASGNode* lay1_detNode2 = _rGraph.addOASGNode(1, 40, 52, OASGNodeType::MIDDLE);
+    // // layer1
+    // cerr << "layer1..." << endl;
+    // OASGNode* lay1_obsNode1 = _rGraph.addOASGNode(2, 32, 56, OASGNodeType::MIDDLE);
+    // OASGNode* lay1_obsNode2 = _rGraph.addOASGNode(2, 48, 56, OASGNodeType::MIDDLE);
+    // OASGNode* lay1_obsNode3 = _rGraph.addOASGNode(2, 48, 60, OASGNodeType::MIDDLE);
+    // OASGNode* lay1_obsNode4 = _rGraph.addOASGNode(2, 32, 60, OASGNodeType::MIDDLE);
+    // OASGNode* lay1_detNode1 = _rGraph.addOASGNode(1, 40, 40, OASGNodeType::MIDDLE);
+    // OASGNode* lay1_detNode2 = _rGraph.addOASGNode(1, 40, 52, OASGNodeType::MIDDLE);
 
-    _rGraph.addOASGEdge(0, 1, _rGraph.sourceOASGNode(0,1), _rGraph.targetOASGNode(0,0,1), false);
+    // _rGraph.addOASGEdge(0, 1, _rGraph.sourceOASGNode(0,1), _rGraph.targetOASGNode(0,0,1), false);
 
-    _rGraph.addOASGEdge(1, 1, _rGraph.sourceOASGNode(1,1), _rGraph.targetOASGNode(1,0,1), false);
-    _rGraph.addOASGEdge(1, 1, _rGraph.sourceOASGNode(1,1), _rGraph.targetOASGNode(1,1,1), false);
-    _rGraph.addOASGEdge(1, 1, _rGraph.targetOASGNode(1,0,1), lay1_detNode1, false);
-    _rGraph.addOASGEdge(1, 1, lay1_detNode1, _rGraph.targetOASGNode(1,1,1), false);
-    _rGraph.addOASGEdge(1, 1, _rGraph.targetOASGNode(1,0,1), lay1_detNode2, false);
-    _rGraph.addOASGEdge(1, 1, lay1_detNode2, _rGraph.targetOASGNode(1,1,1), false);
+    // _rGraph.addOASGEdge(1, 1, _rGraph.sourceOASGNode(1,1), _rGraph.targetOASGNode(1,0,1), false);
+    // _rGraph.addOASGEdge(1, 1, _rGraph.sourceOASGNode(1,1), _rGraph.targetOASGNode(1,1,1), false);
+    // _rGraph.addOASGEdge(1, 1, _rGraph.targetOASGNode(1,0,1), lay1_detNode1, false);
+    // _rGraph.addOASGEdge(1, 1, lay1_detNode1, _rGraph.targetOASGNode(1,1,1), false);
+    // _rGraph.addOASGEdge(1, 1, _rGraph.targetOASGNode(1,0,1), lay1_detNode2, false);
+    // _rGraph.addOASGEdge(1, 1, lay1_detNode2, _rGraph.targetOASGNode(1,1,1), false);
 
-    _rGraph.addOASGEdge(2, 1, _rGraph.sourceOASGNode(2,1), _rGraph.targetOASGNode(2,0,1), false);
-    _rGraph.addOASGEdge(2, 1, _rGraph.sourceOASGNode(2,1), lay1_obsNode1, false);
-    _rGraph.addOASGEdge(2, 1, lay1_obsNode1, lay1_obsNode4, false);
-    _rGraph.addOASGEdge(2, 1, lay1_obsNode4, _rGraph.targetOASGNode(2,1,1), false);
-    _rGraph.addOASGEdge(2, 1, _rGraph.targetOASGNode(2,0,1), lay1_obsNode1, false);
-    _rGraph.addOASGEdge(2, 1, _rGraph.targetOASGNode(2,0,1), lay1_obsNode2, false);
-    _rGraph.addOASGEdge(2, 1, lay1_obsNode2, lay1_obsNode3, false);
-    _rGraph.addOASGEdge(2, 1, lay1_obsNode3, _rGraph.targetOASGNode(2,1,1), false);
+    // _rGraph.addOASGEdge(2, 1, _rGraph.sourceOASGNode(2,1), _rGraph.targetOASGNode(2,0,1), false);
+    // _rGraph.addOASGEdge(2, 1, _rGraph.sourceOASGNode(2,1), lay1_obsNode1, false);
+    // _rGraph.addOASGEdge(2, 1, lay1_obsNode1, lay1_obsNode4, false);
+    // _rGraph.addOASGEdge(2, 1, lay1_obsNode4, _rGraph.targetOASGNode(2,1,1), false);
+    // _rGraph.addOASGEdge(2, 1, _rGraph.targetOASGNode(2,0,1), lay1_obsNode1, false);
+    // _rGraph.addOASGEdge(2, 1, _rGraph.targetOASGNode(2,0,1), lay1_obsNode2, false);
+    // _rGraph.addOASGEdge(2, 1, lay1_obsNode2, lay1_obsNode3, false);
+    // _rGraph.addOASGEdge(2, 1, lay1_obsNode3, _rGraph.targetOASGNode(2,1,1), false);
 
-    // layer2
-    cerr << "layer2..." << endl;
-    OASGNode* lay2_net0_obsNode1 = _rGraph.addOASGNode(0, 8, 24, OASGNodeType::MIDDLE);
-    OASGNode* lay2_net0_obsNode2 = _rGraph.addOASGNode(0, 32, 24, OASGNodeType::MIDDLE);
-    OASGNode* lay2_net0_obsNode3 = _rGraph.addOASGNode(0, 32, 32, OASGNodeType::MIDDLE);
-    OASGNode* lay2_net0_obsNode4 = _rGraph.addOASGNode(0, 8, 32, OASGNodeType::MIDDLE);
-    OASGNode* lay2_net1_obsNode1 = _rGraph.addOASGNode(1, 8, 24, OASGNodeType::MIDDLE);
-    OASGNode* lay2_net1_obsNode2 = _rGraph.addOASGNode(1, 32, 24, OASGNodeType::MIDDLE);
-    OASGNode* lay2_net1_obsNode3 = _rGraph.addOASGNode(1, 32, 32, OASGNodeType::MIDDLE);
-    OASGNode* lay2_net1_obsNode4 = _rGraph.addOASGNode(1, 8, 32, OASGNodeType::MIDDLE);
-    OASGNode* lay2_detNode1 = _rGraph.addOASGNode(1, 40, 40, OASGNodeType::MIDDLE);
-    OASGNode* lay2_detNode2 = _rGraph.addOASGNode(1, 40, 52, OASGNodeType::MIDDLE);
+    // // layer2
+    // cerr << "layer2..." << endl;
+    // OASGNode* lay2_net0_obsNode1 = _rGraph.addOASGNode(0, 8, 24, OASGNodeType::MIDDLE);
+    // OASGNode* lay2_net0_obsNode2 = _rGraph.addOASGNode(0, 32, 24, OASGNodeType::MIDDLE);
+    // OASGNode* lay2_net0_obsNode3 = _rGraph.addOASGNode(0, 32, 32, OASGNodeType::MIDDLE);
+    // OASGNode* lay2_net0_obsNode4 = _rGraph.addOASGNode(0, 8, 32, OASGNodeType::MIDDLE);
+    // OASGNode* lay2_net1_obsNode1 = _rGraph.addOASGNode(1, 8, 24, OASGNodeType::MIDDLE);
+    // OASGNode* lay2_net1_obsNode2 = _rGraph.addOASGNode(1, 32, 24, OASGNodeType::MIDDLE);
+    // OASGNode* lay2_net1_obsNode3 = _rGraph.addOASGNode(1, 32, 32, OASGNodeType::MIDDLE);
+    // OASGNode* lay2_net1_obsNode4 = _rGraph.addOASGNode(1, 8, 32, OASGNodeType::MIDDLE);
+    // OASGNode* lay2_detNode1 = _rGraph.addOASGNode(1, 40, 40, OASGNodeType::MIDDLE);
+    // OASGNode* lay2_detNode2 = _rGraph.addOASGNode(1, 40, 52, OASGNodeType::MIDDLE);
 
-    _rGraph.addOASGEdge(0, 2, _rGraph.sourceOASGNode(0,2), lay2_net0_obsNode1, false);
-    _rGraph.addOASGEdge(0, 2, lay2_net0_obsNode1, lay2_net0_obsNode4, false);
-    _rGraph.addOASGEdge(0, 2, lay2_net0_obsNode4, _rGraph.targetOASGNode(0,0,2), false);
-    _rGraph.addOASGEdge(0, 2, _rGraph.sourceOASGNode(0,2), lay2_net0_obsNode2, false);
-    _rGraph.addOASGEdge(0, 2, lay2_net0_obsNode2, lay2_net0_obsNode3, false);
-    _rGraph.addOASGEdge(0, 2, lay2_net0_obsNode3, _rGraph.targetOASGNode(0,0,2), false);
+    // _rGraph.addOASGEdge(0, 2, _rGraph.sourceOASGNode(0,2), lay2_net0_obsNode1, false);
+    // _rGraph.addOASGEdge(0, 2, lay2_net0_obsNode1, lay2_net0_obsNode4, false);
+    // _rGraph.addOASGEdge(0, 2, lay2_net0_obsNode4, _rGraph.targetOASGNode(0,0,2), false);
+    // _rGraph.addOASGEdge(0, 2, _rGraph.sourceOASGNode(0,2), lay2_net0_obsNode2, false);
+    // _rGraph.addOASGEdge(0, 2, lay2_net0_obsNode2, lay2_net0_obsNode3, false);
+    // _rGraph.addOASGEdge(0, 2, lay2_net0_obsNode3, _rGraph.targetOASGNode(0,0,2), false);
     
-    _rGraph.addOASGEdge(1, 2, _rGraph.sourceOASGNode(1,2), lay2_net1_obsNode1, false);
-    _rGraph.addOASGEdge(1, 2, lay2_net1_obsNode1, lay2_net1_obsNode4, false);
-    _rGraph.addOASGEdge(1, 2, lay2_net1_obsNode4, _rGraph.targetOASGNode(1,0,2), false);
-    _rGraph.addOASGEdge(1, 2, _rGraph.sourceOASGNode(1,2), lay2_net1_obsNode2, false);
-    _rGraph.addOASGEdge(1, 2, lay2_net1_obsNode2, lay2_net1_obsNode3, false);
-    _rGraph.addOASGEdge(1, 2, lay2_net1_obsNode3, _rGraph.targetOASGNode(1,0,2), false);
+    // _rGraph.addOASGEdge(1, 2, _rGraph.sourceOASGNode(1,2), lay2_net1_obsNode1, false);
+    // _rGraph.addOASGEdge(1, 2, lay2_net1_obsNode1, lay2_net1_obsNode4, false);
+    // _rGraph.addOASGEdge(1, 2, lay2_net1_obsNode4, _rGraph.targetOASGNode(1,0,2), false);
+    // _rGraph.addOASGEdge(1, 2, _rGraph.sourceOASGNode(1,2), lay2_net1_obsNode2, false);
+    // _rGraph.addOASGEdge(1, 2, lay2_net1_obsNode2, lay2_net1_obsNode3, false);
+    // _rGraph.addOASGEdge(1, 2, lay2_net1_obsNode3, _rGraph.targetOASGNode(1,0,2), false);
 
-    _rGraph.addOASGEdge(1, 2, _rGraph.sourceOASGNode(1,2), _rGraph.targetOASGNode(1,1,2), false);
-    _rGraph.addOASGEdge(1, 2, _rGraph.targetOASGNode(1,0,2), lay2_detNode1, false);
-    _rGraph.addOASGEdge(1, 2, lay2_detNode1, _rGraph.targetOASGNode(1,1,2), false);
-    _rGraph.addOASGEdge(1, 2, _rGraph.targetOASGNode(1,0,2), lay2_detNode2, false);
-    _rGraph.addOASGEdge(1, 2, lay2_detNode2, _rGraph.targetOASGNode(1,1,2), false);
+    // _rGraph.addOASGEdge(1, 2, _rGraph.sourceOASGNode(1,2), _rGraph.targetOASGNode(1,1,2), false);
+    // _rGraph.addOASGEdge(1, 2, _rGraph.targetOASGNode(1,0,2), lay2_detNode1, false);
+    // _rGraph.addOASGEdge(1, 2, lay2_detNode1, _rGraph.targetOASGNode(1,1,2), false);
+    // _rGraph.addOASGEdge(1, 2, _rGraph.targetOASGNode(1,0,2), lay2_detNode2, false);
+    // _rGraph.addOASGEdge(1, 2, lay2_detNode2, _rGraph.targetOASGNode(1,1,2), false);
 
-    _rGraph.addOASGEdge(2, 2, _rGraph.sourceOASGNode(2,2), _rGraph.targetOASGNode(2,0,2), false);
-    _rGraph.addOASGEdge(2, 2, _rGraph.sourceOASGNode(2,2), _rGraph.targetOASGNode(2,1,2), false);
-    _rGraph.addOASGEdge(2, 2, _rGraph.targetOASGNode(2,0,2), _rGraph.targetOASGNode(2,1,2), false);
+    // _rGraph.addOASGEdge(2, 2, _rGraph.sourceOASGNode(2,2), _rGraph.targetOASGNode(2,0,2), false);
+    // _rGraph.addOASGEdge(2, 2, _rGraph.sourceOASGNode(2,2), _rGraph.targetOASGNode(2,1,2), false);
+    // _rGraph.addOASGEdge(2, 2, _rGraph.targetOASGNode(2,0,2), _rGraph.targetOASGNode(2,1,2), false);
 
-    // layer3
-    cerr << "layer3..." << endl;
-    OASGNode* lay3_detNode1 = _rGraph.addOASGNode(1, 40, 40, OASGNodeType::MIDDLE);
-    OASGNode* lay3_detNode2 = _rGraph.addOASGNode(1, 40, 52, OASGNodeType::MIDDLE);
-    _rGraph.addOASGEdge(0, 3, _rGraph.sourceOASGNode(0,3), _rGraph.targetOASGNode(0,0,3), false);
-    _rGraph.addOASGEdge(1, 3, _rGraph.sourceOASGNode(1,3), _rGraph.targetOASGNode(1,0,3), false);
-    _rGraph.addOASGEdge(1, 3, _rGraph.sourceOASGNode(1,3), _rGraph.targetOASGNode(1,1,3), false);
-    _rGraph.addOASGEdge(1, 3, _rGraph.targetOASGNode(1,0,3), lay3_detNode1, false);
-    _rGraph.addOASGEdge(1, 3, lay3_detNode1, _rGraph.targetOASGNode(1,1,3), false);
-    _rGraph.addOASGEdge(1, 3, _rGraph.targetOASGNode(1,0,3), lay3_detNode2, false);
-    _rGraph.addOASGEdge(1, 3, lay3_detNode2, _rGraph.targetOASGNode(1,1,3), false);
-    _rGraph.addOASGEdge(2, 3, _rGraph.sourceOASGNode(2,3), _rGraph.targetOASGNode(2,0,3), false);
-    _rGraph.addOASGEdge(2, 3, _rGraph.sourceOASGNode(2,3), _rGraph.targetOASGNode(2,1,3), false);
-    _rGraph.addOASGEdge(2, 3, _rGraph.targetOASGNode(2,0,3), _rGraph.targetOASGNode(2,1,3), false);
+    // // layer3
+    // cerr << "layer3..." << endl;
+    // OASGNode* lay3_detNode1 = _rGraph.addOASGNode(1, 40, 40, OASGNodeType::MIDDLE);
+    // OASGNode* lay3_detNode2 = _rGraph.addOASGNode(1, 40, 52, OASGNodeType::MIDDLE);
+    // _rGraph.addOASGEdge(0, 3, _rGraph.sourceOASGNode(0,3), _rGraph.targetOASGNode(0,0,3), false);
+    // _rGraph.addOASGEdge(1, 3, _rGraph.sourceOASGNode(1,3), _rGraph.targetOASGNode(1,0,3), false);
+    // _rGraph.addOASGEdge(1, 3, _rGraph.sourceOASGNode(1,3), _rGraph.targetOASGNode(1,1,3), false);
+    // _rGraph.addOASGEdge(1, 3, _rGraph.targetOASGNode(1,0,3), lay3_detNode1, false);
+    // _rGraph.addOASGEdge(1, 3, lay3_detNode1, _rGraph.targetOASGNode(1,1,3), false);
+    // _rGraph.addOASGEdge(1, 3, _rGraph.targetOASGNode(1,0,3), lay3_detNode2, false);
+    // _rGraph.addOASGEdge(1, 3, lay3_detNode2, _rGraph.targetOASGNode(1,1,3), false);
+    // _rGraph.addOASGEdge(2, 3, _rGraph.sourceOASGNode(2,3), _rGraph.targetOASGNode(2,0,3), false);
+    // _rGraph.addOASGEdge(2, 3, _rGraph.sourceOASGNode(2,3), _rGraph.targetOASGNode(2,1,3), false);
+    // _rGraph.addOASGEdge(2, 3, _rGraph.targetOASGNode(2,0,3), _rGraph.targetOASGNode(2,1,3), false);
 }
 
 // Given three collinear points p, q, r, the function checks if 
@@ -422,10 +422,10 @@ void GlobalMgr::buildOASG(bool case5) {
         double minY = _db.vNet(netId)->sourcePort()->boundPolygon()->minY();
         double maxX = _db.vNet(netId)->sourcePort()->boundPolygon()->maxX();
         double maxY = _db.vNet(netId)->sourcePort()->boundPolygon()->maxY();
-        tempViaOASGNodes[viaNodeId][0] = _rGraph.addOASGNode(netId, minX, minY, OASGNodeType::MIDDLE);
-        tempViaOASGNodes[viaNodeId][1] = _rGraph.addOASGNode(netId, maxX, minY, OASGNodeType::MIDDLE);
-        tempViaOASGNodes[viaNodeId][2] = _rGraph.addOASGNode(netId, maxX, maxY, OASGNodeType::MIDDLE);
-        tempViaOASGNodes[viaNodeId][3] = _rGraph.addOASGNode(netId, minX, maxY, OASGNodeType::MIDDLE);
+        tempViaOASGNodes[viaNodeId][0] = _rGraph.addOASGNode(netId, 0, minX, minY, OASGNodeType::MIDDLE);
+        tempViaOASGNodes[viaNodeId][1] = _rGraph.addOASGNode(netId, 0, maxX, minY, OASGNodeType::MIDDLE);
+        tempViaOASGNodes[viaNodeId][2] = _rGraph.addOASGNode(netId, 0, maxX, maxY, OASGNodeType::MIDDLE);
+        tempViaOASGNodes[viaNodeId][3] = _rGraph.addOASGNode(netId, 0, minX, maxY, OASGNodeType::MIDDLE);
         ++viaNodeId ;
         //Secondly, check with the target viaclusters
         for(size_t tPortId = 0; tPortId < _db.vNet(netId)->numTPorts(); ++ tPortId) {
@@ -433,10 +433,10 @@ void GlobalMgr::buildOASG(bool case5) {
             double minY = _db.vNet(netId)->targetPort(tPortId)->boundPolygon()->minY();
             double maxX = _db.vNet(netId)->targetPort(tPortId)->boundPolygon()->maxX();
             double maxY = _db.vNet(netId)->targetPort(tPortId)->boundPolygon()->maxY();
-            tempViaOASGNodes[viaNodeId][0] = _rGraph.addOASGNode(netId, minX, minY, OASGNodeType::MIDDLE);
-            tempViaOASGNodes[viaNodeId][1] = _rGraph.addOASGNode(netId, maxX, minY, OASGNodeType::MIDDLE);
-            tempViaOASGNodes[viaNodeId][2] = _rGraph.addOASGNode(netId, maxX, maxY, OASGNodeType::MIDDLE);
-            tempViaOASGNodes[viaNodeId][3] = _rGraph.addOASGNode(netId, minX, maxY, OASGNodeType::MIDDLE);
+            tempViaOASGNodes[viaNodeId][0] = _rGraph.addOASGNode(netId, 0, minX, minY, OASGNodeType::MIDDLE);
+            tempViaOASGNodes[viaNodeId][1] = _rGraph.addOASGNode(netId, 0, maxX, minY, OASGNodeType::MIDDLE);
+            tempViaOASGNodes[viaNodeId][2] = _rGraph.addOASGNode(netId, 0, maxX, maxY, OASGNodeType::MIDDLE);
+            tempViaOASGNodes[viaNodeId][3] = _rGraph.addOASGNode(netId, 0, minX, maxY, OASGNodeType::MIDDLE);
             ++viaNodeId;
         }
         viaOASGNodes[netId] = tempViaOASGNodes;
@@ -453,7 +453,7 @@ void GlobalMgr::buildOASG(bool case5) {
                 _rGraph.addOASGEdge(netId, layerId, _rGraph.targetOASGNode(netId, 0,layerId), _rGraph.targetOASGNode(netId, 1,layerId), false);
                 double maxX = _db.vNet(0)->targetPort(0)->boundPolygon()->maxX();
                 double maxY = _db.vNet(0)->targetPort(0)->boundPolygon()->maxY();
-                OASGNode* obsNode = _rGraph.addOASGNode(2, maxX, maxY, OASGNodeType::MIDDLE);
+                OASGNode* obsNode = _rGraph.addOASGNode(2, layerId, maxX, maxY, OASGNodeType::MIDDLE);
                 _rGraph.addOASGEdge(netId, layerId, _rGraph.sourceOASGNode(netId,layerId), obsNode, false);
                 _rGraph.addOASGEdge(netId, layerId, obsNode, _rGraph.targetOASGNode(netId, 1,layerId), false);
                 continue;
@@ -493,7 +493,7 @@ void GlobalMgr::buildOASG(bool case5) {
                     for(int j = 0; j < numPolyVtcs; ++j){
                         tempX =  _db.vObstacle(layerId, obsId)->vShape(0)->bPolygonX(j);
                         tempY =  _db.vObstacle(layerId, obsId)->vShape(0)->bPolygonY(j);
-                        obsNodes[obsId][j] = _rGraph.addOASGNode(netId, tempX, tempY, OASGNodeType::MIDDLE);
+                        obsNodes[obsId][j] = _rGraph.addOASGNode(netId, layerId, tempX, tempY, OASGNodeType::MIDDLE);
                     }
                     
                 }
@@ -717,6 +717,62 @@ void GlobalMgr::plotOASG() {
     }
 }
 
+void GlobalMgr::trimOASG() {
+    auto legal = [&](OASGNode* node) -> bool {
+        return (node->x() > 0 && node->x() < _db.boardWidth() && node->y() > 0 && node->y() < _db.boardHeight());
+    };
+    RGraph* legalOASG = new RGraph();
+    legalOASG->initRGraph(_db);
+    vector<int> vNewNodeId(_rGraph.numOASGNodes(), -1);
+    vector<int> vNewEdgeId(_rGraph.numOASGEdges(), -1);
+    for (size_t netId = 0; netId < _rGraph.numNets(); ++ netId) {
+        for (size_t layId = 0; layId < _rGraph.numLayers(); ++ layId) {
+            OASGNode* sNode = _rGraph.sourceOASGNode(netId, layId);
+            vNewNodeId[sNode->nodeId()] = sNode->nodeId();
+            for (size_t netTPortId = 0; netTPortId < _rGraph.numTPorts(netId); ++ netTPortId) {
+                OASGNode* tNode = _rGraph.targetOASGNode(netId, netTPortId, layId);
+                vNewNodeId[tNode->nodeId()] = tNode->nodeId();
+            }
+        }
+    }
+
+    for (size_t netId = 0; netId < _rGraph.numNets(); ++ netId) {
+        for (size_t layId = 0; layId < _rGraph.numLayers(); ++ layId) {
+            for (size_t pEdgeId = 0; pEdgeId < _rGraph.numPlaneOASGEdges(netId, layId); ++ pEdgeId) {
+                OASGEdge* e = _rGraph.vPlaneOASGEdge(netId, layId, pEdgeId);
+                if (legal(e->sNode()) && legal(e->tNode())) {
+                    if (vNewEdgeId[e->edgeId()] == -1) {
+                        // find or create a new sNode for the new edge
+                        OASGNode* sNode = e->sNode();
+                        OASGNode* newSNode;
+                        if (vNewNodeId[sNode->nodeId()] == -1) {
+                            newSNode = legalOASG->addOASGNode(sNode->netId(), layId, sNode->x(), sNode->y(), sNode->nodeType());
+                            vNewNodeId[sNode->nodeId()] = newSNode->nodeId();
+                        } else {
+                            newSNode = legalOASG->vOASGNode( vNewNodeId[sNode->nodeId()] );
+                        }
+                        // find or create a new tNode for the new edge
+                        OASGNode* tNode = e->tNode();
+                        OASGNode* newTNode;
+                        if (vNewNodeId[tNode->nodeId()] == -1) {
+                            newTNode = legalOASG->addOASGNode(tNode->netId(), layId, tNode->x(), tNode->y(), tNode->nodeType());
+                            vNewNodeId[tNode->nodeId()] = newTNode->nodeId();
+                        } else {
+                            newTNode = legalOASG->vOASGNode( vNewNodeId[tNode->nodeId()] );
+                        }
+                        size_t newEdgeId = legalOASG->addOASGEdge(e->netId(), e->layId(), newSNode, newTNode, e->viaEdge());
+                        vNewEdgeId[e->edgeId()] = newEdgeId;
+                    }
+                } 
+            }
+        }
+    }
+    cerr << "legalOASG: \n";
+    // legalOASG->print();
+    _rGraph = *legalOASG;
+    _rGraph.print();
+}
+
 void GlobalMgr::layerDistribution() {
     // construct the routing graph
     _rGraph.constructRGraph();
@@ -790,6 +846,9 @@ void GlobalMgr::plotRGraph() {
 }
 
 void GlobalMgr::buildTestNCOASG() {
+    cerr << "buildTestNCOASG\n";
+    cerr << "before nc" << endl;
+    _rGraph.print();
     RGraph* NCOASG = new RGraph();
     NCOASG->initRGraph(_db);
     vector<int> vNewNodeId(_rGraph.numOASGNodes(), -1);
@@ -817,7 +876,7 @@ void GlobalMgr::buildTestNCOASG() {
                             OASGNode* sNode = e->sNode();
                             OASGNode* newSNode;
                             if (vNewNodeId[sNode->nodeId()] == -1) {
-                                newSNode = NCOASG->addOASGNode(sNode->netId(), sNode->x(), sNode->y(), sNode->nodeType());
+                                newSNode = NCOASG->addOASGNode(sNode->netId(), sNode->layId(), sNode->x(), sNode->y(), sNode->nodeType());
                                 vNewNodeId[sNode->nodeId()] = newSNode->nodeId();
                             } else {
                                 newSNode = NCOASG->vOASGNode( vNewNodeId[sNode->nodeId()] );
@@ -826,7 +885,7 @@ void GlobalMgr::buildTestNCOASG() {
                             OASGNode* tNode = e->tNode();
                             OASGNode* newTNode;
                             if (vNewNodeId[tNode->nodeId()] == -1) {
-                                newTNode = NCOASG->addOASGNode(tNode->netId(), tNode->x(), tNode->y(), tNode->nodeType());
+                                newTNode = NCOASG->addOASGNode(tNode->netId(), tNode->layId(), tNode->x(), tNode->y(), tNode->nodeType());
                                 vNewNodeId[tNode->nodeId()] = newTNode->nodeId();
                             } else {
                                 newTNode = NCOASG->vOASGNode( vNewNodeId[tNode->nodeId()] );
@@ -839,6 +898,8 @@ void GlobalMgr::buildTestNCOASG() {
             }
         }
     }
+    cerr << "NCOASG:" << endl;
+    NCOASG->print();
 
     // set redundant nodes and edges
     for (size_t netId = 0; netId < NCOASG->numNets(); ++ netId) {
@@ -847,10 +908,12 @@ void GlobalMgr::buildTestNCOASG() {
             OASGNode* sNode = NCOASG->sourceOASGNode(netId, layId);
             if (sNode->numOutEdges() == 0) {
                 sNode->setRedundant();
+                assert(sNode->numInEdges() > 0);
                 NCOASG->vOASGEdge(sNode->inEdgeId(0))->setRedundant();
             } else if (sNode->numOutEdges() == 1) {
                 if (NCOASG->vOASGEdge(sNode->outEdgeId(0))->redundant()) {
                     sNode->setRedundant();
+                    assert(sNode->numInEdges() > 0);
                     NCOASG->vOASGEdge(sNode->inEdgeId(0))->setRedundant();
                 }
             }
@@ -859,10 +922,12 @@ void GlobalMgr::buildTestNCOASG() {
                 OASGNode* tNode = NCOASG->targetOASGNode(netId, tPortId, layId);
                 if (tNode->numInEdges() == 0) {
                     tNode->setRedundant();
+                    assert(tNode->numOutEdges() > 0);
                     NCOASG->vOASGEdge(tNode->outEdgeId(0))->setRedundant();
                 } else if (tNode->numInEdges() == 1) {
                     if (NCOASG->vOASGEdge(tNode->inEdgeId(0))->redundant()) {
                         tNode->setRedundant();
+                        assert(tNode->numOutEdges() > 0);
                         NCOASG->vOASGEdge(tNode->outEdgeId(0))->setRedundant();
                     }
                 }
