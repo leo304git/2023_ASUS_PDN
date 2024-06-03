@@ -68,7 +68,16 @@ void TopologyMgr::connectNodes(size_t netId, size_t layId, OASGNode* sNode, OASG
         return (p.first > 0 && p.first < _db.boardWidth() && p.second > 0 && p.second < _db.boardHeight());
     };
 
-    // detour around port polygons
+    auto intersect2Points = [] (Shape* shape, double x1, double y1, double x2, double y2) -> bool {
+        vector<pair<double, double>> interPoint;
+        shape->intersectPoints(x1, y1, x2, y2, interPoint);
+        return interPoint.size() > 1;
+    };
+
+    Shape* nearestShape = NULL;
+    double minDist = std::numeric_limits<double>::max();
+
+    // find the nearest port polygon that sNode intersects
     for (size_t netId1 = 0; netId1 < _db.numNets(); ++ netId1) {
         if (netId1 != netId) {
             for (size_t portId = 0; portId < _db.vNet(netId1)->numTPorts()+1; ++ portId) {
@@ -78,146 +87,112 @@ void TopologyMgr::connectNodes(size_t netId, size_t layId, OASGNode* sNode, OASG
                 } else {
                     portShape = _db.vNet(netId1)->targetPort(portId-1)->boundPolygon();
                 }
-                if (portShape->intersect(sNode->x(), sNode->y(), tNode->x(), tNode->y())) {
-                    vector<pair<double, double>> polygon = portShape->bPolygon();
-                    pair<double, double> sPoint = make_pair(sNode->x(), sNode->y());
-                    pair<double, double> tPoint = make_pair(tNode->x(), tNode->y());
-                    // point having minimum distance from the point p 
-                    size_t sId = nearPointId(sPoint, polygon);
-                    size_t sUpperId = upperTangentId(sId, sPoint, polygon);
-                    size_t sLowerId = lowerTangentId(sId, sPoint, polygon);
-                    size_t tId = nearPointId(tPoint, polygon);
-                    size_t tUpperId = upperTangentId(tId, tPoint, polygon);
-                    size_t tLowerId = lowerTangentId(tId, tPoint, polygon);
-                    bool rightLegal = true;
-                    for (size_t rId = sUpperId; rId != tLowerId; rId = (rId+1)%polygon.size()) {
-                        if (!legal(polygon[rId])) {
-                            rightLegal = false;
-                            break;
+                if (intersect2Points(portShape, sNode->x(), sNode->y(), tNode->x(), tNode->y())){
+                    vector<pair<double, double>> interPoint;
+                    portShape->intersectPoints(sNode->x(), sNode->y(), tNode->x(), tNode->y(), interPoint);
+                    for (size_t i = 0; i < interPoint.size(); ++ i) {
+                        double dist = sqrt((interPoint[i].first-sNode->x())*(interPoint[i].first-sNode->x()) + (interPoint[i].second-sNode->y())*(interPoint[i].second-sNode->y()));
+                        if (dist < minDist) {
+                            minDist = dist;
+                            nearestShape = portShape;
                         }
                     }
-                    if (rightLegal) {
-                        OASGNode* sUpperNode = _rGraph.addOASGNode(netId, layId, polygon[sUpperId].first, polygon[sUpperId].second, OASGNodeType::MIDDLE);
-                        _rGraph.addOASGEdge(netId, layId, sNode, sUpperNode, false);
-                        if (sUpperId != tLowerId) {
-                            OASGNode* lastNode = sUpperNode;
-                            size_t rId  = (sUpperId + 1) % polygon.size();
-                            while (rId != tLowerId) {
-                                OASGNode* newNode = _rGraph.addOASGNode(netId, layId, polygon[rId].first, polygon[rId].second, OASGNodeType::MIDDLE);
-                                _rGraph.addOASGEdge(netId, layId, lastNode, newNode, false);
-                                lastNode = newNode;
-                                rId = (rId + 1) % polygon.size();
-                            }
-                            OASGNode* tLowerNode = _rGraph.addOASGNode(netId, layId, polygon[tLowerId].first, polygon[tLowerId].second, OASGNodeType::MIDDLE);
-                            _rGraph.addOASGEdge(netId, layId, lastNode, tLowerNode, false);
-                            _rGraph.addOASGEdge(netId, layId, tLowerNode, tNode, false);
-                        } else {
-                            _rGraph.addOASGEdge(netId, layId, sUpperNode, tNode, false);
-                        }
-                    }
-
-                    bool leftLegal = true;
-                    for (size_t lId = sLowerId; lId != tUpperId; lId = (lId+1)%polygon.size()) {
-                        if (!legal(polygon[lId])) {
-                            leftLegal = false;
-                            break;
-                        }
-                    }
-                    if (leftLegal) {
-                        OASGNode* sLowerNode = _rGraph.addOASGNode(netId, layId, polygon[sLowerId].first, polygon[sLowerId].second, OASGNodeType::MIDDLE);
-                        _rGraph.addOASGEdge(netId, layId, sNode, sLowerNode, false);
-                        if (sLowerId != tUpperId) {
-                            OASGNode* lastNode = sLowerNode;
-                            size_t lId  = (sLowerId + polygon.size() - 1) % polygon.size();
-                            while (lId != tUpperId) {
-                                OASGNode* newNode = _rGraph.addOASGNode(netId, layId, polygon[lId].first, polygon[lId].second, OASGNodeType::MIDDLE);
-                                _rGraph.addOASGEdge(netId, layId, lastNode, newNode, false);
-                                lastNode = newNode;
-                                lId = (lId + polygon.size() - 1) % polygon.size();
-                            }
-                            OASGNode* tUpperNode = _rGraph.addOASGNode(netId, layId, polygon[tUpperId].first, polygon[tUpperId].second, OASGNodeType::MIDDLE);
-                            _rGraph.addOASGEdge(netId, layId, lastNode, tUpperNode, false);
-                            _rGraph.addOASGEdge(netId, layId, tUpperNode, tNode, false);
-                        } else {
-                            _rGraph.addOASGEdge(netId, layId, sLowerNode, tNode, false);
-                        }
-                    }
-                    return;
                 }
             }
         }
     }
-    // detour around obstacle polygons
+
+    // find the nearest obstacle polygon that sNode intersects
     for (size_t obsId = 0; obsId < _db.vMetalLayer(layId)->numObstacles(); ++ obsId) {
         Obstacle* obs = _db.vMetalLayer(layId)->vObstacle(obsId);
-        if (obs->vShape(0)->intersect(sNode->x(), sNode->y(), tNode->x(), tNode->y())) {
-            vector<pair<double, double>> polygon = obs->vShape(0)->bPolygon();
-            pair<double, double> sPoint = make_pair(sNode->x(), sNode->y());
-            pair<double, double> tPoint = make_pair(tNode->x(), tNode->y());
-            // point having minimum distance from the point p 
-            size_t sId = nearPointId(sPoint, polygon);
-            size_t sUpperId = upperTangentId(sId, sPoint, polygon);
-            size_t sLowerId = lowerTangentId(sId, sPoint, polygon);
-            size_t tId = nearPointId(tPoint, polygon);
-            size_t tUpperId = upperTangentId(tId, tPoint, polygon);
-            size_t tLowerId = lowerTangentId(tId, tPoint, polygon);
-            bool rightLegal = true;
-            for (size_t rId = sUpperId; rId != tLowerId; rId = (rId+1)%polygon.size()) {
-                if (!legal(polygon[rId])) {
-                    rightLegal = false;
-                    break;
+        if (intersect2Points(obs->vShape(0), sNode->x(), sNode->y(), tNode->x(), tNode->y())){
+            vector<pair<double, double>> interPoint;
+            obs->vShape(0)->intersectPoints(sNode->x(), sNode->y(), tNode->x(), tNode->y(), interPoint);
+            for (size_t i = 0; i < interPoint.size(); ++ i) {
+                double dist = sqrt((interPoint[i].first-sNode->x())*(interPoint[i].first-sNode->x()) + (interPoint[i].second-sNode->y())*(interPoint[i].second-sNode->y()));
+                if (dist < minDist) {
+                    minDist = dist;
+                    nearestShape = obs->vShape(0);
                 }
             }
-            if (rightLegal) {
-                OASGNode* sUpperNode = _rGraph.addOASGNode(netId, layId, polygon[sUpperId].first, polygon[sUpperId].second, OASGNodeType::MIDDLE);
-                _rGraph.addOASGEdge(netId, layId, sNode, sUpperNode, false);
-                if (sUpperId != tLowerId) {
-                    OASGNode* lastNode = sUpperNode;
-                    size_t rId  = (sUpperId + 1) % polygon.size();
-                    while (rId != tLowerId) {
-                        OASGNode* newNode = _rGraph.addOASGNode(netId, layId, polygon[rId].first, polygon[rId].second, OASGNodeType::MIDDLE);
-                        _rGraph.addOASGEdge(netId, layId, lastNode, newNode, false);
-                        lastNode = newNode;
-                        rId = (rId + 1) % polygon.size();
-                    }
-                    OASGNode* tLowerNode = _rGraph.addOASGNode(netId, layId, polygon[tLowerId].first, polygon[tLowerId].second, OASGNodeType::MIDDLE);
-                    _rGraph.addOASGEdge(netId, layId, lastNode, tLowerNode, false);
-                    _rGraph.addOASGEdge(netId, layId, tLowerNode, tNode, false);
-                } else {
-                    _rGraph.addOASGEdge(netId, layId, sUpperNode, tNode, false);
-                }
-            }
-
-            bool leftLegal = true;
-            for (size_t lId = sLowerId; lId != tUpperId; lId = (lId+1)%polygon.size()) {
-                if (!legal(polygon[lId])) {
-                    leftLegal = false;
-                    break;
-                }
-            }
-            if (leftLegal) {
-                OASGNode* sLowerNode = _rGraph.addOASGNode(netId, layId, polygon[sLowerId].first, polygon[sLowerId].second, OASGNodeType::MIDDLE);
-                _rGraph.addOASGEdge(netId, layId, sNode, sLowerNode, false);
-                if (sLowerId != tUpperId) {
-                    OASGNode* lastNode = sLowerNode;
-                    size_t lId  = (sLowerId + polygon.size() - 1) % polygon.size();
-                    while (lId != tUpperId) {
-                        OASGNode* newNode = _rGraph.addOASGNode(netId, layId, polygon[lId].first, polygon[lId].second, OASGNodeType::MIDDLE);
-                        _rGraph.addOASGEdge(netId, layId, lastNode, newNode, false);
-                        lastNode = newNode;
-                        lId = (lId + polygon.size() - 1) % polygon.size();
-                    }
-                    OASGNode* tUpperNode = _rGraph.addOASGNode(netId, layId, polygon[tUpperId].first, polygon[tUpperId].second, OASGNodeType::MIDDLE);
-                    _rGraph.addOASGEdge(netId, layId, lastNode, tUpperNode, false);
-                    _rGraph.addOASGEdge(netId, layId, tUpperNode, tNode, false);
-                } else {
-                    _rGraph.addOASGEdge(netId, layId, sLowerNode, tNode, false);
-                }
-            }
-            return;
         }
     }
-    _rGraph.addOASGEdge(netId, layId, sNode, tNode, false);
+    
+    // detour around the nearest polygon
+    if (nearestShape != NULL) {
+        vector<pair<double, double>> polygon = nearestShape->bPolygon();
+        pair<double, double> sPoint = make_pair(sNode->x(), sNode->y());
+        pair<double, double> tPoint = make_pair(tNode->x(), tNode->y());
+        // point having minimum distance from the point p 
+        size_t sId = nearPointId(sPoint, polygon);
+        size_t sUpperId = upperTangentId(sId, sPoint, polygon);
+        size_t sLowerId = lowerTangentId(sId, sPoint, polygon);
+        size_t tId = nearPointId(tPoint, polygon);
+        size_t tUpperId = upperTangentId(tId, tPoint, polygon);
+        size_t tLowerId = lowerTangentId(tId, tPoint, polygon);
+
+        // construct the right detoured path
+        bool rightLegal = true;
+        for (size_t rId = sUpperId; rId != tLowerId; rId = (rId+1)%polygon.size()) {
+            if (!legal(polygon[rId])) {
+                rightLegal = false;
+                break;
+            }
+        }
+        if (rightLegal) {
+            OASGNode* sUpperNode = _rGraph.addOASGNode(netId, layId, polygon[sUpperId].first, polygon[sUpperId].second, OASGNodeType::MIDDLE);
+            _rGraph.addOASGEdge(netId, layId, sNode, sUpperNode, false);
+            if (sUpperId != tLowerId) {
+                OASGNode* lastNode = sUpperNode;
+                size_t rId  = (sUpperId + 1) % polygon.size();
+                while (rId != tLowerId) {
+                    OASGNode* newNode = _rGraph.addOASGNode(netId, layId, polygon[rId].first, polygon[rId].second, OASGNodeType::MIDDLE);
+                    _rGraph.addOASGEdge(netId, layId, lastNode, newNode, false);
+                    lastNode = newNode;
+                    rId = (rId + 1) % polygon.size();
+                }
+                OASGNode* tLowerNode = _rGraph.addOASGNode(netId, layId, polygon[tLowerId].first, polygon[tLowerId].second, OASGNodeType::MIDDLE);
+                _rGraph.addOASGEdge(netId, layId, lastNode, tLowerNode, false);
+                // _rGraph.addOASGEdge(netId, layId, tLowerNode, tNode, false);
+                connectNodes(netId, layId, tLowerNode, tNode);
+            } else {
+                // _rGraph.addOASGEdge(netId, layId, sUpperNode, tNode, false);
+                connectNodes(netId, layId, sUpperNode, tNode);
+            }
+        }
+
+        // construct the left detoured path
+        bool leftLegal = true;
+        for (size_t lId = sLowerId; lId != tUpperId; lId = (lId+1)%polygon.size()) {
+            if (!legal(polygon[lId])) {
+                leftLegal = false;
+                break;
+            }
+        }
+        if (leftLegal) {
+            OASGNode* sLowerNode = _rGraph.addOASGNode(netId, layId, polygon[sLowerId].first, polygon[sLowerId].second, OASGNodeType::MIDDLE);
+            _rGraph.addOASGEdge(netId, layId, sNode, sLowerNode, false);
+            if (sLowerId != tUpperId) {
+                OASGNode* lastNode = sLowerNode;
+                size_t lId  = (sLowerId + polygon.size() - 1) % polygon.size();
+                while (lId != tUpperId) {
+                    OASGNode* newNode = _rGraph.addOASGNode(netId, layId, polygon[lId].first, polygon[lId].second, OASGNodeType::MIDDLE);
+                    _rGraph.addOASGEdge(netId, layId, lastNode, newNode, false);
+                    lastNode = newNode;
+                    lId = (lId + polygon.size() - 1) % polygon.size();
+                }
+                OASGNode* tUpperNode = _rGraph.addOASGNode(netId, layId, polygon[tUpperId].first, polygon[tUpperId].second, OASGNodeType::MIDDLE);
+                _rGraph.addOASGEdge(netId, layId, lastNode, tUpperNode, false);
+                // _rGraph.addOASGEdge(netId, layId, tUpperNode, tNode, false);
+                connectNodes(netId, layId, tUpperNode, tNode);
+            } else {
+                // _rGraph.addOASGEdge(netId, layId, sLowerNode, tNode, false);
+                connectNodes(netId, layId, sLowerNode, tNode);
+            }
+        }
+    } else {
+        _rGraph.addOASGEdge(netId, layId, sNode, tNode, false);
+    }
     return;
 }
 

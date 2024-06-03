@@ -13,7 +13,7 @@ target_link_libraries(global PUBLIC ${GUROBI_LIBRARY})
 target_include_directories(global PRIVATE "${GUROBI_INCLUDE_DIRS}")
 
 # Add Cplex
-find_package(CPLEX REQUIRED)
-target_link_libraries(global PUBLIC ${CPLEX_LIBRARIES})
-target_link_libraries(global PUBLIC dl)
-target_include_directories(global PUBLIC "${CPLEX_INCLUDE_DIRS}")
+# find_package(CPLEX REQUIRED)
+# target_link_libraries(global PUBLIC ${CPLEX_LIBRARIES})
+# target_link_libraries(global PUBLIC dl)
+# target_include_directories(global PUBLIC "${CPLEX_INCLUDE_DIRS}")

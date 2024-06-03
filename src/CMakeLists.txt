@@ -10,7 +10,7 @@ find_package(GUROBI REQUIRED)
 #target_link_libraries(network PUBLIC optimized ${GUROBI_CXX_LIBRARY} debug ${GUROBI_CXX_DEBUG_LIBRARY})
 #target_link_libraries(network PUBLIC ${GUROBI_LIBRARY})
 #target_include_directories(network PRIVATE "${GUROBI_INCLUDE_DIRS}")
-find_package(CPLEX REQUIRED)
+# find_package(CPLEX REQUIRED)
 find_package(Boost 1.85 REQUIRED)
 
 add_subdirectory(base)

@@ -47,6 +47,7 @@ class Shape {
         }
         virtual bool trim(double lowerX, double upperX, double lowerY, double upperY) {return false;}
         virtual bool intersect(double x1, double y1, double x2, double y2) {return false;}
+        virtual void intersectPoints(double x1, double y1, double x2, double y2, vector<pair<double, double>>& vIntersect) {}
     protected:
         SVGPlot& _plot;
         // pair<double, double> _center;
@@ -196,8 +197,9 @@ class Polygon : public Shape {
             return trimmed;
         }
         bool intersect(double x1, double y1, double x2, double y2) {
-            assert(!enclose(x1, y1) && !enclose(x2, y2));
+            // assert(!enclose(x1, y1) && !enclose(x2, y2));
             typedef bg::model::d2::point_xy<double> bgPoint;
+            // typedef bg::model::point<double, 2, bg::cs::cartesian> bgPoint;
             typedef boost::geometry::model::segment<bgPoint> bgLine;
             typedef bg::model::polygon<bgPoint> bgPolygon;
             bgLine bgLine1(bgPoint(x1, y1), bgPoint(x2, y2));
@@ -209,6 +211,29 @@ class Polygon : public Shape {
             bg::correct(bgPoly1);
 
             return bg::intersects(bgPoly1, bgLine1);
+        }
+        void intersectPoints(double x1, double y1, double x2, double y2, vector<pair<double, double>>& vIntersect) {
+            // assert(!enclose(x1, y1) && !enclose(x2, y2));
+            typedef bg::model::d2::point_xy<double> bgPoint;
+            // typedef bg::model::point<double, 2, bg::cs::cartesian> bgPoint;
+            typedef boost::geometry::model::linestring<bgPoint> bgLine;
+            typedef bg::model::polygon<bgPoint> bgPolygon;
+            // bgLine bgLine1(bgPoint(x1, y1), bgPoint(x2, y2));
+            bgLine bgLine1;
+            bg::append(bgLine1, bgPoint(x1, y1));
+            bg::append(bgLine1, bgPoint(x2, y2));
+            bgPolygon bgPoly1;
+            for (size_t vtxId = 0; vtxId < _vVtx.size(); ++ vtxId) {
+                bg::append(bgPoly1.outer(), bgPoint(_vVtx[vtxId].first, _vVtx[vtxId].second));
+            }
+            
+            bg::correct(bgPoly1);
+
+            vector<bgPoint> vIntersectBG;
+            bg::intersection(bgPoly1, bgLine1, vIntersectBG);
+            for (size_t i = 0; i < vIntersectBG.size(); ++ i) {
+                vIntersect.push_back(make_pair(bg::get<0>(vIntersectBG[i]), bg::get<1>(vIntersectBG[i])));
+            }
         }
     private:
         vector< pair<double, double> > _vVtx;

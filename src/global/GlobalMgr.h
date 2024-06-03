@@ -44,8 +44,8 @@ class GlobalMgr {
             TopologyMgr topoMgr(_db, _rGraph, _plot);
             topoMgr.buildOASG(false);
             // topoMgr.plotOASG();
-            // topoMgr.layerDistribution();
-            // topoMgr.buildNCOASG();
+            topoMgr.layerDistribution();
+            topoMgr.buildNCOASG();
         }
         void buildOASG(bool case5);
         void buildOASGXObs();

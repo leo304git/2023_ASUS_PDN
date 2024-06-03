@@ -189,12 +189,12 @@ int main(int argc, char* argv[]){
     // globalMgr.trimOASG();
 
     // globalMgr.buildOASGXObs();
-    globalMgr.plotOASG();
+    // globalMgr.plotOASG();
     
     // globalMgr.layerDistribution();
     // // //globalMgr.plotRGraph();
     // globalMgr.buildTestNCOASG();
-    // globalMgr.plotNCOASG();
+    globalMgr.plotNCOASG();
     // // globalMgr.voltageAssignment();
 /*
     globalMgr.genCapConstrs();
