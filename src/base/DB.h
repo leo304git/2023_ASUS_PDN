@@ -48,6 +48,7 @@ class DB {
         DBNode*      vDBNode(string nodeName)                 { return _vDBNode[_nodeName2Id[nodeName]]; }
         DBNode*      vSNode(size_t netId, size_t sNodeId)     { return vDBNode(_vSNode[netId][sNodeId]); }
         DBNode*      vTNode(size_t netId, size_t tNodeId)     { return vDBNode(_vTNode[netId][tNodeId]); }
+        DBNode*      vTClusteredNode(size_t netId, size_t tPortId, size_t nodeId) { return _vTClusteredNode[netId][tPortId][nodeId]; }
 
         size_t numNets()                  const { return _vNet.size(); }
         size_t numLayers()                const { return _vMetalLayer.size(); } // number of metal layers
@@ -61,6 +62,7 @@ class DB {
         size_t numObstacles(size_t layId) const { return _vMetalLayer[layId]->numObstacles(); }
         size_t numSNodes(size_t netId)    const { return _vSNode[netId].size(); }
         size_t numTNodes(size_t netId)    const { return _vTNode[netId].size(); }
+        size_t numTNodes(size_t netId, size_t tPortId) const { return _vTClusteredNode[netId][tPortId].size(); }
         double boardWidth()               const { return _boardWidth; }
         double boardHeight()              const { return _boardHeight; }
         double areaWeight()               const { return _areaWeight; }
@@ -194,6 +196,10 @@ class DB {
             _vTNode[netId].push_back(tNodeName);
         }
 
+        void setTClusteredNode(vector< vector< vector< DBNode* > > > vTClusteredNode) {
+            _vTClusteredNode = vTClusteredNode;
+        }
+
         void addObstacle (size_t layId, vector<Shape*> vShape) {
             Obstacle* obs = new Obstacle(vShape);
             _vObstacle.push_back(obs);
@@ -289,6 +295,7 @@ class DB {
         // map<string, int>    _layName2Id;
         vector< vector< string > > _vSNode; // index = [netId] [sNodeId]
         vector< vector< string > > _vTNode; // index = [netId] [tNodeId]
+        vector< vector< vector< DBNode* > > > _vTClusteredNode; // index = [netId] [tPortId] [nodeId] // assigned in PreMgr
         PadStack* _VIA16D8A24;
 };
 

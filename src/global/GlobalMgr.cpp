@@ -1311,18 +1311,20 @@ void GlobalMgr::voltCurrOpt() {
 
     // add viaArea of each port
     // vias will be added in detailed routing
-    for (size_t netId = 0; netId < _rGraph.numNets(); ++ netId) {
-        assert(_rGraph.vViaOASGEdge(netId, 0, 0)->sNode()->port() == _db.vNet(netId)->sourcePort());
-        double sViaArea = _rGraph.vViaOASGEdge(netId, 0, 0)->viaArea();
-        assert(sViaArea >= 0);
-        _db.vNet(netId)->sourcePort()->setViaArea(sViaArea);
-        cerr << "net" << netId << " s: viaArea = " << sViaArea << ", upperbound = " << _vUBViaArea[netId][0] << endl;
-        for (size_t tPortId = 0; tPortId < _db.vNet(netId)->numTPorts(); ++ tPortId) {
-            assert(_rGraph.vViaOASGEdge(netId, 0, tPortId+1)->tNode()->port() == _db.vNet(netId)->targetPort(tPortId));
-            double tViaArea = _rGraph.vViaOASGEdge(netId, 0, tPortId+1)->viaArea();
-            assert(tViaArea >= 0);
-            _db.vNet(netId)->targetPort(tPortId)->setViaArea(tViaArea);
-            cerr << "net" << netId << " t" << tPortId << ": viaArea = " << tViaArea << ", upperbound = " << _vUBViaArea[netId][tPortId+1] << endl;
+    if (_db.numLayers() > 1) {
+        for (size_t netId = 0; netId < _rGraph.numNets(); ++ netId) {
+            assert(_rGraph.vViaOASGEdge(netId, 0, 0)->sNode()->port() == _db.vNet(netId)->sourcePort());
+            double sViaArea = _rGraph.vViaOASGEdge(netId, 0, 0)->viaArea();
+            assert(sViaArea >= 0);
+            _db.vNet(netId)->sourcePort()->setViaArea(sViaArea);
+            cerr << "net" << netId << " s: viaArea = " << sViaArea << ", upperbound = " << _vUBViaArea[netId][0] << endl;
+            for (size_t tPortId = 0; tPortId < _db.vNet(netId)->numTPorts(); ++ tPortId) {
+                assert(_rGraph.vViaOASGEdge(netId, 0, tPortId+1)->tNode()->port() == _db.vNet(netId)->targetPort(tPortId));
+                double tViaArea = _rGraph.vViaOASGEdge(netId, 0, tPortId+1)->viaArea();
+                assert(tViaArea >= 0);
+                _db.vNet(netId)->targetPort(tPortId)->setViaArea(tViaArea);
+                cerr << "net" << netId << " t" << tPortId << ": viaArea = " << tViaArea << ", upperbound = " << _vUBViaArea[netId][tPortId+1] << endl;
+            }
         }
     }
 

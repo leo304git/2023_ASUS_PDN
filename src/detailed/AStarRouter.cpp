@@ -25,8 +25,8 @@ bool AStarRouter::route() {
         //     (dir == Direction::Right && xId + floor(ceil(_lbWidth/_gridWidth)/2.0) == _tPos.first && yId == _tPos.second) ||
         //     (dir == Direction::Left && xId - floor(ceil(_lbWidth/_gridWidth)/2.0) == _tPos.first && yId == _tPos.second)) {
             stepNode->setParent(orgNode);
-            backTraceNoPad();
-            // backTrace(xId, yId);
+            // backTraceNoPad();
+            backTrace(xId, yId);
             // cerr << _vGNode[-1][-1] << endl;
             return true;
         } else if (stepNode->status() != GNodeStatus::InPath) {
@@ -424,7 +424,8 @@ double AStarRouter::marginCongestCost(int xId, int yId, Direction dir) {
         return pow(1-_widthRatio, w-ceil(_lbWidth/_gridWidth)) * _widthRatio;
     };
     double congestion = 0.0;
-    double threshold = 0.0001;
+    // double threshold = 0.0001;
+    double threshold = _widthRatio * 0.5;
     for (int w = ceil(_lbWidth/_gridWidth); prob(w) > threshold; ++ w) {
         // cerr << "w = " << w << ", prob = " << prob(w) << endl;
         double wCongestion = 0.0;

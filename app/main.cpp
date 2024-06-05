@@ -194,11 +194,13 @@ int main(int argc, char* argv[]){
     // globalMgr.layerDistribution();
     // // //globalMgr.plotRGraph();
     // globalMgr.buildTestNCOASG();
-    globalMgr.plotNCOASG();
+    // globalMgr.plotNCOASG();
     // // globalMgr.voltageAssignment();
-/*
+// /*
     globalMgr.genCapConstrs();
-    globalMgr.setUBViaArea(detailedMgr->vNetPortGrid());
+    if (db.numLayers() > 1) {
+        globalMgr.setUBViaArea(detailedMgr->vNetPortGrid());
+    }
     try {
         // globalMgr.voltageDemandAssignment();
         // globalMgr.voltageAssignment();
@@ -224,8 +226,8 @@ int main(int argc, char* argv[]){
         cerr << e.getMessage() << endl;
     }
     // globalMgr.plotCurrentPaths();
-*/
-/*
+// */
+// /*
     // DetailedMgr detailedMgr(db, plot, 2 * db.VIA16D8A24()->drillRadius());
     delete detailedMgr;
     detailedMgr = new DetailedMgr(db, plot, 2 * db.VIA16D8A24()->drillRadius());
@@ -236,7 +238,9 @@ int main(int argc, char* argv[]){
     // // detailedMgr.naiveAStar();
     detailedMgr->negoAStar(false);
     detailedMgr->check();
-    //detailedMgr->plotGridMap();
+    detailedMgr->plotGridMap();
+// */
+// /*
     detailedMgr->addPortVia();
     detailedMgr->check();
     // // // detailedMgr.plotVia();
@@ -247,7 +251,9 @@ int main(int argc, char* argv[]){
     // // // detailedMgr.print();
 
     // printf("\n==================== buildMtx ===================\n");
-    //detailedMgr->buildMtx();
+    detailedMgr->buildMtx();
+// */
+/*
     //detailedMgr->SmartDistribute();
     detailedMgr->PostProcessing();
     detailedMgr->RemoveIsolatedGrid();

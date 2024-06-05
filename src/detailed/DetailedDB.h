@@ -42,9 +42,9 @@ class Grid {
         bool IsPort(size_t netId ) const { return _IsPort[netId]; }
 
         // set function
-        void incCongestCur() { _congestCur ++; _congestion ++; }
-        void decCongestCur() { _congestCur --; _congestion --; }
-        void incCongestHis() { _congestHis ++; _congestion ++; }
+        void incCongestCur() { _congestCur += 10; _congestion += 10; }
+        void decCongestCur() { _congestCur -= 10; _congestion -= 10; }
+        void incCongestHis() { _congestHis += 14; _congestion += 14; }
         void setPort(size_t netId){ _IsPort[netId] = true; }
         // void decCongestHis() { _congestHis --; _congestion --; }
         void addCongestCur(int congestion) { _congestCur += congestion; _congestion += congestion; } 

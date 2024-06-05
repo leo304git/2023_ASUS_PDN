@@ -69,6 +69,7 @@ void PreMgr::nodeClustering() {
             _vTBoundBox[netId].push_back(tb);
         }
     }
+    _db.setTClusteredNode(_vTClusteredNode);
 }
 
 void PreMgr::plotBoundBox() {

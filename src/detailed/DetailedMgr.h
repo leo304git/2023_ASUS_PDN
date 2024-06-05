@@ -5,6 +5,7 @@
 #include "../base/DB.h"
 #include "DetailedDB.h"
 #include "AStarRouter.h"
+#include "OctAStarRouter.h"
 #include <utility>
 using namespace std;
 
@@ -70,6 +71,8 @@ class DetailedMgr {
         void plotGridMap();
         void plotGridMapVoltage();
         void plotGridMapCurrent();
+        void setPortGridCong(size_t layId, size_t netId, size_t portId, int cong);
+        void resetPortGridCong(size_t layId, size_t netId, size_t portId, int cong);
         void naiveAStar();
         void negoAStar(bool sameNetCong);
         void addPortVia();
