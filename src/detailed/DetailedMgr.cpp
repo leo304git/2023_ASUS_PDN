@@ -603,8 +603,8 @@ void DetailedMgr::negoAStar(bool sameNetCong) {
                         int sRealYId = floor(segment->sY() / _gridWidth);
                         int tRealXId = floor(segment->tX() / _gridWidth);
                         int tRealYId = floor(segment->tY() / _gridWidth);
-                        cerr << "origin width = " << segment->width() << endl;
-                        cerr << "astar width = " << AStarWidth(segment) << endl;
+                        // cerr << "origin width = " << segment->width() << endl;
+                        // cerr << "astar width = " << AStarWidth(segment) << endl;
                         // AStarRouter router(_vGrid[layId], make_pair(sXId, sYId), make_pair(tXId, tYId), make_pair(sRealXId, sRealYId), make_pair(tRealXId, tRealYId), 
                         //                 _gridWidth, segment->length(), AStarWidth(segment), _widthRatio, _obsCongest, _distWeight, _cLineDistWeight);
                         OctAStarRouter router(_vGrid[layId], make_pair(sXId, sYId), make_pair(tXId, tYId), make_pair(sRealXId, sRealYId), make_pair(tRealXId, tRealYId), 
@@ -1335,7 +1335,8 @@ void DetailedMgr::buildMtx() {
             double loadResistance = _db.vNet(netId)->targetPort(tPortId)->voltage() / _db.vNet(netId)->targetPort(tPortId)->current();
             _vTPortVolt[netId][tPortId] = _vTPortCurr[netId][tPortId] * loadResistance;
             cerr << "net" << netId << " tPort" << tPortId << ": current = " << _vTPortCurr[netId][tPortId];
-            cerr << ", voltage = " << _vTPortVolt[netId][tPortId] << endl;
+            cerr << ", voltage = " << _vTPortVolt[netId][tPortId];
+            cerr << ", eq. resistance = " << (_db.vNet(netId)->sourcePort()->voltage() - _vTPortVolt[netId][tPortId]) / _vTPortCurr[netId][tPortId] << endl;
         }
     }
 }

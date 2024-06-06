@@ -330,16 +330,17 @@ void OctAStarRouter::backTraceNoPad() {
     };
     GNode* node = _vGNode[_tPos.first][_tPos.second];
     // GNode* node = _vGNode[tXId][tYId];
-    _exactLength = 0.0;
+    double exactLength = 0.0;
     while(node->parent() != node) {
         _path.push_back(_vGrid[node->xId()][node->yId()]);
         node = node->parent();
         if (node->parent()->xId() == node->xId() || node->parent()->yId() == node->yId()) {
-            _exactLength += 1;
+            exactLength += 1.0;
         } else {
-            _exactLength += sqrt(2.0);
+            exactLength += sqrt(2.0);
         }
     }
+    _exactLength = ceil(exactLength);
     assert(node->xId() == _sPos.first && node->yId() == _sPos.second);
     _path.push_back(_vGrid[node->xId()][node->yId()]);
 
@@ -350,13 +351,13 @@ void OctAStarRouter::backTraceNoPad() {
         _exactWidth = ceil(_lbWidth/_gridWidth);
         cerr << "WARNING: A* grid length < global length !" << endl;
     }
-    _exactWidth = ceil(_lbWidth/_gridWidth);
+    // _exactWidth = ceil(_lbWidth/_gridWidth);
     const double wRatio = 1.0/(2.0+2.0*sqrt(2));
     int halfWidth = ceil(0.5 * _lbWidth / _gridWidth);
     // int halfWidth = ceil(0.5 * _exactWidth);
     // double lineLength = pathLength(3, 0) * _gridWidth;
-    // cerr << "lbLength = " << _lbLength << ", _exactLength*gridWidth = " << _exactLength*_gridWidth << ", lineLength = " << lineLength <<  endl;
-    // cerr << "lbWidth = " << _lbWidth << ", _exactWidth*gridWidth = " << _exactWidth*_gridWidth << endl;
+    cerr << "lbLength = " << _lbLength << ", _exactLength*gridWidth = " << _exactLength*_gridWidth <<  endl;
+    cerr << "lbWidth = " << _lbWidth << ", _exactWidth*gridWidth = " << _exactWidth*_gridWidth << endl;
     size_t sPathId = _path.size()-1;
     size_t tPathId = 0;
     bool TEncloseS = false;
@@ -599,7 +600,7 @@ double OctAStarRouter::marginCongestCost(int xId, int yId, Direction dir) {
     };
     double congestion = 0.0;
     // double threshold = 0.0001;
-    const double threshold = _widthRatio * 0.5;
+    const double threshold = _widthRatio * 0.00005;
     const double wRatio = 1.0/(2.0+2.0*sqrt(2));
     for (int w = ceil(_lbWidth/_gridWidth); prob(w) > threshold; ++ w) {
         // cerr << "w = " << w << ", prob = " << prob(w) << endl;
