@@ -107,6 +107,8 @@ void PreMgr::assignPortPolygon() {
         vVtx.push_back(make_pair(_vSBoundBox[netId].minX, _vSBoundBox[netId].maxY));
         Polygon* p = new Polygon(vVtx, _plot);
         _db.vNet(netId)->sourcePort()->setBoundPolygon(p);
+        double sCenterX = p->ctrX();
+        double sCenterY = p->ctrY();
         for (size_t tPortId = 0; tPortId < _vNumTPorts[netId]; ++ tPortId) {
             // vector< pair<double, double> > vVtx;
             // vVtx.push_back(make_pair(_vTBoundBox[netId][tPortId].minX, _vTBoundBox[netId][tPortId].minY));
@@ -117,7 +119,12 @@ void PreMgr::assignPortPolygon() {
             // _db.vNet(netId)->targetPort(tPortId)->setBoundPolygon(p);
             Polygon* p = convexHull(_vTClusteredNode[netId][tPortId]);
             _db.vNet(netId)->targetPort(tPortId)->setBoundPolygon(p);
+            double tCenterX = p->ctrX();
+            double tCenterY = p->ctrY();
+            double T2SDist = sqrt(pow(tCenterX-sCenterX, 2) + pow(tCenterY-sCenterY, 2));
+            _db.vNet(netId)->targetPort(tPortId)->setT2SDist(T2SDist);
         }
+        _db.vNet(netId)->sortTPort();
     }
 }
 

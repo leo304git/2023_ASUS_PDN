@@ -37,6 +37,7 @@ class Port {
         : _portId(portId), _netTPortId(netTPortId), _voltage(voltage), _current(current) {
             _viaCluster = NULL;
             _viaArea = -1;
+            _T2SDist = 0;
         }
         ~Port() {}
         size_t portId() const { return _portId; }
@@ -46,9 +47,12 @@ class Port {
         ViaCluster* viaCluster() { return _viaCluster; }
         Polygon* boundPolygon() { return _boundPolygon; }
         double viaArea() const { return _viaArea; }
+        double T2SDist() const { return _T2SDist; }
         void setBoundPolygon(Polygon* polygon) { _boundPolygon = polygon; }
         void setViaArea(double viaArea) { _viaArea = viaArea; }
         void setViaCluster(ViaCluster* viaCluster) { _viaCluster = viaCluster; }
+        void setT2SDist(double dist) { _T2SDist = dist; }
+        void setNetTPortId(int netTPortId) { _netTPortId = netTPortId; }
         void print() {
             cerr << "Port {portId=" << _portId << ", voltage=" << _voltage << ", current=" << _current << endl;
             cerr << ", netPortId=" << _netTPortId << ", boundPolygon=";
@@ -65,6 +69,7 @@ class Port {
         ViaCluster* _viaCluster;
         Polygon* _boundPolygon;
         double _viaArea;    // assigned in GlobalMgr::currVoltOpt()
+        double _T2SDist;
 };
 
 // class TwoPinNet {
@@ -156,6 +161,16 @@ class Net {
         void addAddedViaCstr(ViaCluster* viaCstr) { _vAddedViaCstr.push_back(viaCstr); }
         // void addTrace(Trace* trace, size_t layId) { _vTrace[layId].push_back(trace); }
         void addSegment(Segment* segment, size_t layId) { _vSegment[layId].push_back(segment); }
+        void sortTPort() {
+            // sort _vTargetPort by their target2source distances in an ascending order
+            auto compareByDist = [] (Port* const& tPort1, Port* const& tPort2) -> bool {
+                return tPort1->T2SDist() < tPort2->T2SDist();
+            };
+            std::sort(_vTargetPort.begin(), _vTargetPort.end(), compareByDist);
+            for (size_t i = 0; i < _vTargetPort.size(); ++ i) {
+                _vTargetPort[i]->setNetTPortId(i);
+            }
+        }
 
         void print() {
             cerr << "Net {" << endl;

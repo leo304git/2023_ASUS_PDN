@@ -183,7 +183,7 @@ int main(int argc, char* argv[]){
     // // // replace this line with a real OASG building function
     // // globalMgr.buildTestOASG();
 
-    
+
     // globalMgr.buildOASG(string(argv[3]).find('5') != std::string::npos);
     globalMgr.buildNewOASG();
     // globalMgr.trimOASG();

@@ -43,9 +43,15 @@ class GlobalMgr {
         void buildNewOASG() {
             TopologyMgr topoMgr(_db, _rGraph, _plot);
             topoMgr.buildOASG(false);
+            clearCapConstrs();
+            genCapConstrs();
+            setNarrowEdges();
             // topoMgr.plotOASG();
             topoMgr.layerDistribution();
+            // topoMgr.plotRGraph();
+            clearCapConstrs();
             topoMgr.buildNCOASG();
+            // topoMgr.plotNCOASG();
         }
         void buildOASG(bool case5);
         void buildOASGXObs();
@@ -70,7 +76,9 @@ class GlobalMgr {
         void layerDistribution();
         void buildTestNCOASG();
         void plotNCOASG();
+        void clearCapConstrs();
         void genCapConstrs();
+        void setNarrowEdges();
         void voltCurrOpt();
         void voltageAssignment(bool currentBased);
         void voltageDemandAssignment();

@@ -111,6 +111,9 @@ void LayerILP::addConflictConstraint(size_t netId, size_t twoPinNetId) {
     for (size_t layId = 0; layId < _rGraph.numLayers(); ++ layId) {
         for (size_t RGEdgeId = 0; RGEdgeId < _rGraph.numRGEdges(twoPinNetId, layId); ++ RGEdgeId) {
             RGEdge* e = _rGraph.vEdge(twoPinNetId, layId, RGEdgeId);
+            if (e->narrow()) {
+                _model.addConstr(_vFlow[twoPinNetId][layId][RGEdgeId] <= 0);
+            }
 
             // the RGEdges from other nets
             for (size_t netId1 = netId+1; netId1 < _rGraph.numNets(); ++ netId1) {

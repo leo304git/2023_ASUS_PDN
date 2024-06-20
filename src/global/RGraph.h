@@ -102,6 +102,7 @@ class OASGEdge {
             _redundant = false;
             _widthLeft = numeric_limits<double>::infinity();
             _widthRight = numeric_limits<double>:: infinity();
+            _narrow = false;
         }
         ~OASGEdge() {}
 
@@ -171,6 +172,8 @@ class OASGEdge {
             return false; // Doesn't fall in any of the above cases
         }
 
+        bool narrow() const { return _narrow; }
+
         void setNode(OASGNode* sNode, OASGNode* tNode) {
             _sNode = sNode;
             _tNode = tNode;
@@ -195,6 +198,8 @@ class OASGEdge {
             assert(_viaEdge);
             _boundPolygon = boundPolygon; 
         }
+
+        void setNarrow() { _narrow = true; }
 
         void print() {
             cerr << "OASGEdge[" << _OASGEdgeId << "], length=" << _length << ", (" << _sNode->x() << " " << _sNode->y() << ") -> (" << _tNode->x() << " " << _tNode->y() << ")" << endl;
@@ -221,6 +226,7 @@ class OASGEdge {
         double _viaArea;    // the cross-sectional area of the via cluster of the edge, assigned in GlobalMgr::currentDistribution()
         bool _redundant;    // true if this edge is not in the current loop (usually occurs with via edges on upper layers)
         Polygon* _boundPolygon;     // bounding polygon of the via edge
+        bool _narrow;       // true if the edge is so narrow that is close to infeasible
 
         // size_t _sNodeId;    // the node with higher voltage
         // size_t _tNodeId;    // the node with lower voltage
@@ -245,6 +251,14 @@ class RGEdge {
                     if (_vEdge[edgeId1]->cross(e->vEdge(edgeId2))) {
                         return true;
                     }
+                }
+            }
+            return false;
+        }
+        bool narrow() {
+            for (size_t edgeId = 0; edgeId < _vEdge.size(); ++ edgeId) {
+                if (_vEdge[edgeId]->narrow()) {
+                    return true;
                 }
             }
             return false;

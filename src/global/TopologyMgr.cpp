@@ -202,7 +202,11 @@ void TopologyMgr::plotOASG() {
         for (size_t layId = 0; layId < _rGraph.numLayers(); ++ layId) {
             for (size_t pEdgeId = 0; pEdgeId < _rGraph.numPlaneOASGEdges(netId, layId); ++ pEdgeId) {
                 OASGEdge* e = _rGraph.vPlaneOASGEdge(netId, layId, pEdgeId);
-                _plot.drawLine(e->sNode()->x(), e->sNode()->y(), e->tNode()->x(), e->tNode()->y(), netId, layId,1.0);
+                if (e->narrow()) {
+                    _plot.drawLine(e->sNode()->x(), e->sNode()->y(), e->tNode()->x(), e->tNode()->y(), SVGPlotColor::black, layId,1.0);
+                } else {
+                    _plot.drawLine(e->sNode()->x(), e->sNode()->y(), e->tNode()->x(), e->tNode()->y(), netId, layId,1.0);
+                }
             }
         }
     }

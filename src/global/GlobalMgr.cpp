@@ -2810,6 +2810,12 @@ Segment* GlobalMgr::edge2Segment(OASGEdge* edge) {
     return segment;
 }
 
+void GlobalMgr::clearCapConstrs() {
+    _vCapConstr.clear();
+    _vSglCapConstr.clear();
+    _vNetCapConstr.clear();
+}
+
 void GlobalMgr::genCapConstrs() {
     auto addCapConstr = [&] (OASGEdge* e1, bool right1, double ratio1, OASGEdge* e2, bool right2, double ratio2, double width) {
         CapConstr capConstr = {e1, right1, ratio1, e2, right2, ratio2, width};
@@ -2827,8 +2833,7 @@ void GlobalMgr::genCapConstrs() {
     // set capacity constraints
     // TODO for Tsai and Huang:
     // for each layer, for each neighboring OASGEdges,
-    
-    
+
     //search each layer                                                                           
     for (size_t layId = 0; layId < _rGraph.numLayers(); ++ layId){
         // cout << "LAYER :" << layId << endl << endl;
@@ -3010,6 +3015,30 @@ void GlobalMgr::genCapConstrs() {
         // cerr << "   width = " << _vNetCapConstr[netCapId].width << endl;
         if (_vNetCapConstr[netCapId].width < 1e-4) {
             _vNetCapConstr[netCapId].width = 0;
+        }
+    }
+}
+
+void GlobalMgr::setNarrowEdges() {
+    for (size_t netId = 0; netId < _rGraph.numNets(); ++ netId) {
+        for (size_t layId = 0; layId < _rGraph.numLayers(); ++ layId) {
+            for (size_t edgeId = 0; edgeId < _rGraph.numPlaneOASGEdges(netId, layId); ++ edgeId) {
+                OASGEdge* edge = _rGraph.vPlaneOASGEdge(netId, layId, edgeId);
+                bool leftNarrow = false;
+                bool rightNarrow = false;
+                for (size_t sglCapId = 0; sglCapId < _vSglCapConstr.size(); ++ sglCapId) {
+                    if (_vSglCapConstr[sglCapId].e1 == edge && _vSglCapConstr[sglCapId].width < 1) {
+                        if (_vSglCapConstr[sglCapId].right1) {
+                            rightNarrow = true;
+                        } else {
+                            leftNarrow = true;
+                        }
+                    }
+                }
+                if (leftNarrow && rightNarrow) {
+                    edge->setNarrow();
+                }
+            }
         }
     }
 }
