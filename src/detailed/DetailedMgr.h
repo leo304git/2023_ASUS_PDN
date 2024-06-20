@@ -73,6 +73,7 @@ class DetailedMgr {
         void plotGridMapCurrent();
         void setPortGridCong(size_t layId, size_t netId, size_t portId, int cong);
         void resetPortGridCong(size_t layId, size_t netId, size_t portId, int cong);
+        void removeObsRailGrids();
         void naiveAStar();
         void negoAStar(bool sameNetCong);
         void addPortVia();
@@ -117,7 +118,7 @@ class DetailedMgr {
         bool SmartRemove(size_t netId, int k);
         bool NetEdgeDetect(size_t netId, size_t layId, Grid* grid);
         void SmartDistribute();
-        void PostProcessing();
+        void PostProcessing(bool smartRemove);
         void RemoveIsolatedGrid();
         void writeColorMap_v2(const char*, bool);
 

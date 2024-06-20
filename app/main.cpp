@@ -190,6 +190,8 @@ int main(int argc, char* argv[]){
 
     // globalMgr.buildOASGXObs();
     // globalMgr.plotOASG();
+    // globalMgr.plotDB();
+    // assert(false);
     
     // globalMgr.layerDistribution();
     // // //globalMgr.plotRGraph();
@@ -237,8 +239,9 @@ int main(int argc, char* argv[]){
     //detailedMgr->plotGridMap();
     // // detailedMgr.naiveAStar();
     detailedMgr->negoAStar(false);
+    detailedMgr->removeObsRailGrids();
     detailedMgr->check();
-    detailedMgr->plotGridMap();
+    // detailedMgr->plotGridMap();
 // */
 // /*
     detailedMgr->addPortVia();
@@ -251,11 +254,12 @@ int main(int argc, char* argv[]){
     // // // detailedMgr.print();
 
     // printf("\n==================== buildMtx ===================\n");
-    detailedMgr->buildMtx();
+    // detailedMgr->buildMtx();
+    // detailedMgr->printResult();
 // */
-/*
+// /*
     //detailedMgr->SmartDistribute();
-    detailedMgr->PostProcessing();
+    detailedMgr->PostProcessing(false);
     detailedMgr->RemoveIsolatedGrid();
 
     time(&end);
@@ -284,7 +288,7 @@ int main(int argc, char* argv[]){
     detailedMgr->printResult();
 
     cout << "Time : " << hour << " hours " << min <<" mins "<< fixed << setprecision(5) << time_used << " sec " << endl; 
-*/
+// */
 
     // // mgr.genRGraph();
     // // // mgr.drawRGraph();

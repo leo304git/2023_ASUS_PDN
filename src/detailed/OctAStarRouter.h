@@ -13,8 +13,8 @@ using namespace std;
 
 class OctAStarRouter {
     public:
-        OctAStarRouter(vector< vector< Grid* > > vGrid, pair<int, int> sPos, pair<int, int> tPos, pair<int, int> sRealPos, pair<int, int> tRealPos, double gridWidth, double lbLength, double lbWidth, double widthRatio, double obsCongest, double distWeight, double cLineDistWeight)
-        : _vGrid(vGrid), _sPos(sPos), _tPos(tPos), _sRealPos(sRealPos), _tRealPos(tRealPos), _gridWidth(gridWidth), _lbLength(lbLength), _lbWidth(lbWidth), _widthRatio(widthRatio), _obsCongest(obsCongest), _distWeight(distWeight), _cLineDistWeight(cLineDistWeight) {
+        OctAStarRouter(vector< vector< Grid* > > vGrid, pair<int, int> sPos, pair<int, int> tPos, pair<int, int> sRealPos, pair<int, int> tRealPos, double gridWidth, double lbLength, double lbWidth, double widthRatio, double obsCongest, double distWeight, double cLineDistWeight, bool rAware = false)
+        : _vGrid(vGrid), _sPos(sPos), _tPos(tPos), _sRealPos(sRealPos), _tRealPos(tRealPos), _gridWidth(gridWidth), _lbLength(lbLength), _lbWidth(lbWidth), _widthRatio(widthRatio), _obsCongest(obsCongest), _distWeight(distWeight), _cLineDistWeight(cLineDistWeight), _rAware(rAware) {
             for (size_t xId = 0; xId < numXId(); ++ xId) {
                 vector<GNode*> temp;
                 for (size_t yId = 0; yId < numYId(); ++ yId) {
@@ -80,6 +80,7 @@ class OctAStarRouter {
         // process
         vector< vector< GNode* > > _vGNode;     // index = [xId] [yId]
         double _obsCongest;         // congestion cost (including history) of obstacles and grids out of boudaries
+        bool _rAware;
 };
 
 #endif

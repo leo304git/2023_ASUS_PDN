@@ -352,6 +352,7 @@ void OctAStarRouter::backTraceNoPad() {
         cerr << "WARNING: A* grid length < global length !" << endl;
     }
     // _exactWidth = ceil(_lbWidth/_gridWidth);
+    if (!_rAware) _exactWidth = ceil(_lbWidth/_gridWidth);
     const double wRatio = 1.0/(2.0+2.0*sqrt(2));
     int halfWidth = ceil(0.5 * _lbWidth / _gridWidth);
     // int halfWidth = ceil(0.5 * _exactWidth);
@@ -813,6 +814,7 @@ double OctAStarRouter::marginCongestCost(int xId, int yId, Direction dir) {
         }
         wCongestion *= prob(w);
         congestion += wCongestion;
+        if (!_rAware) return congestion;
     }
     return congestion;
 }

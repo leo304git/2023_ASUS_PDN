@@ -41,6 +41,7 @@ class TopologyMgr {
         
     private:
         void connectNodes(size_t netId, size_t layId, OASGNode* sNode, OASGNode* tNode);
+        void detour();
         DB& _db;
         SVGPlot& _plot;
         RGraph& _rGraph;
