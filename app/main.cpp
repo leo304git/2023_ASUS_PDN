@@ -227,9 +227,9 @@ int main(int argc, char* argv[]){
         cerr << "Error = " << e.getErrorCode() << endl;
         cerr << e.getMessage() << endl;
     }
-    // globalMgr.plotCurrentPaths();
+    globalMgr.plotCurrentPaths();
 // */
-// /*
+/*
     // DetailedMgr detailedMgr(db, plot, 2 * db.VIA16D8A24()->drillRadius());
     delete detailedMgr;
     detailedMgr = new DetailedMgr(db, plot, 2 * db.VIA16D8A24()->drillRadius());
@@ -243,8 +243,8 @@ int main(int argc, char* argv[]){
     detailedMgr->removeObsRailGrids();
     detailedMgr->check();
     // detailedMgr->plotGridMap();
-// */
-// /*
+*/
+/*
     detailedMgr->addPortVia();
     detailedMgr->check();
     // // // detailedMgr.plotVia();
@@ -257,8 +257,8 @@ int main(int argc, char* argv[]){
     // printf("\n==================== buildMtx ===================\n");
     // detailedMgr->buildMtx();
     // detailedMgr->printResult();
-// */
-// /*
+*/
+/*
     //detailedMgr->SmartDistribute();
     detailedMgr->PostProcessing(false);
     detailedMgr->RemoveIsolatedGrid();
@@ -289,7 +289,7 @@ int main(int argc, char* argv[]){
     detailedMgr->printResult();
 
     cout << "Time : " << hour << " hours " << min <<" mins "<< fixed << setprecision(5) << time_used << " sec " << endl; 
-// */
+*/
 
     // // mgr.genRGraph();
     // // // mgr.drawRGraph();

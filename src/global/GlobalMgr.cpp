@@ -1122,7 +1122,11 @@ void GlobalMgr::voltCurrOpt() {
         }
 
     //Change for into while, add early stop for all three loops
-    for (size_t ivIter = 0; ivIter < numIVIter; ++ ivIter) {
+    vector< pair<size_t, size_t> > vNumIVIter;
+    bool converged = false;
+    size_t ivIter = 0;
+    // for (size_t ivIter = 0; ivIter < numIVIter; ++ ivIter) {
+    while(true){
         cerr << "ivIter = " << ivIter << endl;
         
         
@@ -1150,7 +1154,10 @@ void GlobalMgr::voltCurrOpt() {
             CapConstr cap = _vNetCapConstr[netCapId];
             currentSolver->addSameNetCapacityConstraints(cap.e1, cap.right1, cap.ratio1, cap.e2, cap.right2, cap.ratio2, cap.width);
         }
-        for (size_t iIter = 0; iIter < numIIter; ++iIter) {
+        bool iConverged = false;
+        size_t iIter = 0;
+        // for (size_t iIter = 0; iIter < numIIter; ++iIter) {
+        while (true){
             currentSolver->clearVOverlap();
             for (size_t capId = 0; capId < _vCapConstr.size(); ++ capId) {
                 CapConstr cap = _vCapConstr[capId];
@@ -1206,6 +1213,14 @@ void GlobalMgr::voltCurrOpt() {
                 //調
                 vNetLambda[netCapId] *= 1;
             }
+            if ((currentSolver->beforeCost() - currentSolver->afterCost() < 2 && currentSolver->beforeCost() - currentSolver->afterCost() >= 0) ||
+                iIter > 10) {
+                if (iIter == 0) {
+                    iConverged = true;
+                }
+                break;
+            }
+            iIter++;
         }
 
         // voltage optimization
@@ -1218,7 +1233,10 @@ void GlobalMgr::voltCurrOpt() {
         //     }
         //     vOldVoltage.push_back(temp);
         // }
-        for (size_t vIter = 0; vIter < numVIter; ++ vIter) {
+        bool vConverged = false;
+        size_t vIter = 0;
+        // for (size_t vIter = 0; vIter < numVIter; ++ vIter) {
+        while(true){
             // voltageSolver = new VoltSLP(_db, _rGraph, vOldVoltage);
             voltageSolver = new VoltSLP(_db, _rGraph);
             voltageSolver->setObjective(_db.areaWeight(), _db.viaWeight());
@@ -1265,6 +1283,14 @@ void GlobalMgr::voltCurrOpt() {
             voltageSolver->printRelaxedResult();
             // voltageSolver->collectRelaxedTempVoltage();
             // vOldVoltage = voltageSolver->vNewVoltage();
+            if ((voltageSolver->beforeCost() - voltageSolver->afterCost() < 2 && voltageSolver->beforeCost() - voltageSolver->afterCost() >= 0) ||
+                vIter > 10) {
+                if (vIter == 0) {
+                    vConverged = true;
+                }
+                break;
+            }
+            vIter++;
         }
         // voltageSolver->collectRelaxedResult();
         // // cerr << "vIter = " << vIter << endl;
@@ -1293,6 +1319,12 @@ void GlobalMgr::voltCurrOpt() {
         //     // }
         // }
 
+        vNumIVIter.push_back(make_pair(iIter+1, vIter+1));
+        if ((iConverged && vConverged) || ivIter == 10) {
+            converged = true;
+            break;
+        }
+        ivIter++;
     }
 
     // add traces to each net
@@ -1333,16 +1365,19 @@ void GlobalMgr::voltCurrOpt() {
     cerr << "//    area    //" << endl;
     cerr << "////////////////" << endl;
     size_t i = 0;
-    for (size_t ivIter = 0; ivIter < numIVIter; ++ ivIter) {
+    // for (size_t ivIter = 0; ivIter < numIVIter; ++ ivIter) {
+    for (size_t ivIter = 0; ivIter < vNumIVIter.size(); ++ ivIter) {
         cerr << "ivIter = " << ivIter << endl;
         cerr << "I opt: ";
-        for (size_t iIter = 0; iIter < numIIter; ++iIter) {
+        // for (size_t iIter = 0; iIter < numIIter; ++iIter) {
+        for (size_t iIter = 0; iIter < vNumIVIter[ivIter].first; ++iIter) {
             cerr << _vArea[i] << " -> ";
             i++;
         }
         cerr << endl;
         cerr << "V opt: ";
-        for (size_t vIter = 0; vIter < numVIter; ++ vIter) {
+        // for (size_t vIter = 0; vIter < numVIter; ++ vIter) {
+        for (size_t vIter = 0; vIter < vNumIVIter[ivIter].second; ++ vIter) {
             cerr << _vArea[i] << " -> ";
             i++;
         }
@@ -1352,16 +1387,19 @@ void GlobalMgr::voltCurrOpt() {
     cerr << "//    viaArea    //" << endl;
     cerr << "///////////////////" << endl;
     i = 0;
-    for (size_t ivIter = 0; ivIter < numIVIter; ++ ivIter) {
+    // for (size_t ivIter = 0; ivIter < numIVIter; ++ ivIter) {
+    for (size_t ivIter = 0; ivIter < vNumIVIter.size(); ++ ivIter) {
         cerr << "ivIter = " << ivIter << endl;
         cerr << "I opt: ";
-        for (size_t iIter = 0; iIter < numIIter; ++iIter) {
+        // for (size_t iIter = 0; iIter < numIIter; ++iIter) {
+        for (size_t iIter = 0; iIter < vNumIVIter[ivIter].first; ++iIter) {
             cerr << _vViaArea[i] << " -> ";
             i++;
         }
         cerr << endl;
         cerr << "V opt: ";
-        for (size_t vIter = 0; vIter < numVIter; ++ vIter) {
+        // for (size_t vIter = 0; vIter < numVIter; ++ vIter) {
+        for (size_t vIter = 0; vIter < vNumIVIter[ivIter].second; ++ vIter) {
             cerr << _vViaArea[i] << " -> ";
             i++;
         }
@@ -1371,16 +1409,19 @@ void GlobalMgr::voltCurrOpt() {
     cerr << "//    overlapped width    //" << endl;
     cerr << "////////////////////////////" << endl;
     i = 0;
-    for (size_t ivIter = 0; ivIter < numIVIter; ++ ivIter) {
+    // for (size_t ivIter = 0; ivIter < numIVIter; ++ ivIter) {
+    for (size_t ivIter = 0; ivIter < vNumIVIter.size(); ++ ivIter) {
         cerr << "ivIter = " << ivIter << endl;
         cerr << "I opt: ";
-        for (size_t iIter = 0; iIter < numIIter; ++iIter) {
+        // for (size_t iIter = 0; iIter < numIIter; ++iIter) {
+        for (size_t iIter = 0; iIter < vNumIVIter[ivIter].first; ++iIter) {
             cerr << _vOverlap[i] << " -> ";
             i++;
         }
         cerr << endl;
         cerr << "V opt: ";
-        for (size_t vIter = 0; vIter < numVIter; ++ vIter) {
+        // for (size_t vIter = 0; vIter < numVIter; ++ vIter) {
+        for (size_t vIter = 0; vIter < vNumIVIter[ivIter].second; ++ vIter) {
             cerr << _vOverlap[i] << " -> ";
             i++;
         }
@@ -1390,16 +1431,19 @@ void GlobalMgr::voltCurrOpt() {
     cerr << "//    same net overlapped width    //" << endl;
     cerr << "/////////////////////////////////////" << endl;
     i = 0;
-    for (size_t ivIter = 0; ivIter < numIVIter; ++ ivIter) {
+    // for (size_t ivIter = 0; ivIter < numIVIter; ++ ivIter) {
+    for (size_t ivIter = 0; ivIter < vNumIVIter.size(); ++ ivIter) {
         cerr << "ivIter = " << ivIter << endl;
         cerr << "I opt: ";
-        for (size_t iIter = 0; iIter < numIIter; ++iIter) {
+        // for (size_t iIter = 0; iIter < numIIter; ++iIter) {
+        for (size_t iIter = 0; iIter < vNumIVIter[ivIter].first; ++iIter) {
             cerr << _vSameNetOverlap[i] << " -> ";
             i++;
         }
         cerr << endl;
         cerr << "V opt: ";
-        for (size_t vIter = 0; vIter < numVIter; ++ vIter) {
+        // for (size_t vIter = 0; vIter < numVIter; ++ vIter) {
+        for (size_t vIter = 0; vIter < vNumIVIter[ivIter].second; ++ vIter) {
             cerr << _vSameNetOverlap[i] << " -> ";
             i++;
         }
@@ -1409,16 +1453,19 @@ void GlobalMgr::voltCurrOpt() {
     cerr << "//    Total Cost    //" << endl;
     cerr << "//////////////////////" << endl;
     i = 0;
-    for (size_t ivIter = 0; ivIter < numIVIter; ++ ivIter) {
+    // for (size_t ivIter = 0; ivIter < numIVIter; ++ ivIter) {
+    for (size_t ivIter = 0; ivIter < vNumIVIter.size(); ++ ivIter) {
         cerr << "ivIter = " << ivIter << endl;
         cerr << "I opt: ";
-        for (size_t iIter = 0; iIter < numIIter; ++iIter) {
+        // for (size_t iIter = 0; iIter < numIIter; ++iIter) {
+        for (size_t iIter = 0; iIter < vNumIVIter[ivIter].first; ++iIter) {
             cerr << "(" << _vBeforeCost[i] << " -> " << _vAfterCost[i] << ") => ";
             i++;
         }
         cerr << endl;
         cerr << "V opt: ";
-        for (size_t vIter = 0; vIter < numVIter; ++ vIter) {
+        // for (size_t vIter = 0; vIter < numVIter; ++ vIter) {
+        for (size_t vIter = 0; vIter < vNumIVIter[ivIter].second; ++ vIter) {
             cerr << "(" << _vBeforeCost[i] << " -> " << _vAfterCost[i] << ") => ";
             i++;
         }
@@ -1428,16 +1475,19 @@ void GlobalMgr::voltCurrOpt() {
     cerr << "//    Overlap Cost    //" << endl;
     cerr << "////////////////////////" << endl;
     i = 0;
-    for (size_t ivIter = 0; ivIter < numIVIter; ++ ivIter) {
+    // for (size_t ivIter = 0; ivIter < numIVIter; ++ ivIter) {
+    for (size_t ivIter = 0; ivIter < vNumIVIter.size(); ++ ivIter) {
         cerr << "ivIter = " << ivIter << endl;
         cerr << "I opt: ";
-        for (size_t iIter = 0; iIter < numIIter; ++iIter) {
+        // for (size_t iIter = 0; iIter < numIIter; ++iIter) {
+        for (size_t iIter = 0; iIter < vNumIVIter[ivIter].first; ++iIter) {
             cerr << "(" << _vBeforeOverlapCost[i] << " -> " << _vAfterOverlapCost[i] << ") => ";
             i++;
         }
         cerr << endl;
         cerr << "V opt: ";
-        for (size_t vIter = 0; vIter < numVIter; ++ vIter) {
+        // for (size_t vIter = 0; vIter < numVIter; ++ vIter) {
+        for (size_t vIter = 0; vIter < vNumIVIter[ivIter].second; ++ vIter) {
             cerr << "(" << _vBeforeOverlapCost[i] << " -> " << _vAfterOverlapCost[i] << ") => ";
             i++;
         }
