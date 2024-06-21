@@ -760,6 +760,203 @@ void DetailedMgr::negoAStar(bool sameNetCong) {
     }
 }
 
+void DetailedMgr::decideRouteOrder(size_t layId, vector< pair<size_t, size_t> >& vRouteOrder) {
+    auto dist = [] (double x1, double y1, double x2, double y2) -> double {
+        return sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+    };
+
+    double centerX = 0.5 * _db.boardWidth();
+    double centerY = 0.5 * _db.boardHeight();
+
+    if (_db.vMetalLayer(layId)->numObstacles() > 0) {
+        // find the middlest obstacle on the layer
+        double minDist = _db.boardWidth() + _db.boardHeight();
+        size_t minObsId = 0;
+        for (size_t obsId = 0; obsId < _db.vMetalLayer(layId)->numObstacles(); ++ obsId) {
+            Shape* shape = _db.vMetalLayer(layId)->vObstacle(obsId)->vShape(0);
+            double curDist = dist(centerX, centerY, shape->ctrX(), shape->ctrY());
+            if (curDist < minDist) {
+                minDist = curDist;
+                minObsId = obsId;
+            }
+        }
+        centerX = _db.vMetalLayer(layId)->vObstacle(minObsId)->vShape(0)->ctrX();
+        centerY = _db.vMetalLayer(layId)->vObstacle(minObsId)->vShape(0)->ctrY();
+    }
+
+    for (size_t netId = 0; netId < _db.numNets(); ++ netId) {
+        for (size_t segId = 0; segId < _db.vNet(netId)->numSegments(layId); ++ segId) {
+            vRouteOrder.push_back(make_pair(netId, segId));
+        }
+    }
+
+    auto compareByDist = [&] (pair<size_t, size_t> const& seg1, pair<size_t, size_t> const& seg2) -> bool {
+        double seg1X = 0.5 * (_db.vNet(seg1.first)->vSegment(layId, seg1.second)->sX() + _db.vNet(seg1.first)->vSegment(layId, seg1.second)->tX());
+        double seg1Y = 0.5 * (_db.vNet(seg1.first)->vSegment(layId, seg1.second)->sY() + _db.vNet(seg1.first)->vSegment(layId, seg1.second)->tY());
+        double seg2X = 0.5 * (_db.vNet(seg2.first)->vSegment(layId, seg2.second)->sX() + _db.vNet(seg2.first)->vSegment(layId, seg2.second)->tX());
+        double seg2Y = 0.5 * (_db.vNet(seg2.first)->vSegment(layId, seg2.second)->sY() + _db.vNet(seg2.first)->vSegment(layId, seg2.second)->tY());
+
+        return dist(centerX, centerY, seg1X, seg1Y) < dist(centerX, centerY, seg2X, seg2Y);
+    };
+    std::sort(vRouteOrder.begin(), vRouteOrder.end(), compareByDist);
+
+}
+
+void DetailedMgr::decideRouteOrder(size_t layId, vector<size_t>& vRouteOrder) {
+    auto dist = [] (double x1, double y1, double x2, double y2) -> double {
+        return sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+    };
+
+    double centerX = 0.5 * _db.boardWidth();
+    double centerY = 0.5 * _db.boardHeight();
+
+    if (_db.vMetalLayer(layId)->numObstacles() > 0) {
+        // find the middlest obstacle on the layer
+        double minDist = _db.boardWidth() + _db.boardHeight();
+        size_t minObsId = 0;
+        for (size_t obsId = 0; obsId < _db.vMetalLayer(layId)->numObstacles(); ++ obsId) {
+            Shape* shape = _db.vMetalLayer(layId)->vObstacle(obsId)->vShape(0);
+            double curDist = dist(centerX, centerY, shape->ctrX(), shape->ctrY());
+            if (curDist < minDist) {
+                minDist = curDist;
+                minObsId = obsId;
+            }
+        }
+        centerX = _db.vMetalLayer(layId)->vObstacle(minObsId)->vShape(0)->ctrX();
+        centerY = _db.vMetalLayer(layId)->vObstacle(minObsId)->vShape(0)->ctrY();
+    }
+
+    for (size_t netId = 0; netId < _db.numNets(); ++ netId) {
+        vRouteOrder.push_back(netId);
+    }
+
+    auto compareByDist = [&] (size_t const& netId1, size_t const& netId2) -> bool {
+        double sX1 = _db.vNet(netId1)->sourcePort()->boundPolygon()->ctrX();
+        double sY1 = _db.vNet(netId1)->sourcePort()->boundPolygon()->ctrY();
+        double tX1 = 0;
+        double tY1 = 0;
+        for (size_t tPortId = 0; tPortId < _db.vNet(netId1)->numTPorts(); ++ tPortId) {
+            tX1 += _db.vNet(netId1)->targetPort(tPortId)->boundPolygon()->ctrX();
+            tY1 += _db.vNet(netId1)->targetPort(tPortId)->boundPolygon()->ctrY();
+        }
+        tX1 /= _db.vNet(netId1)->numTPorts();
+        tY1 /= _db.vNet(netId1)->numTPorts();
+        double netX1 = 0.5 * (sX1 + tX1);
+        double netY1 = 0.5 * (sY1 + tY1);
+
+        double sX2 = _db.vNet(netId2)->sourcePort()->boundPolygon()->ctrX();
+        double sY2 = _db.vNet(netId2)->sourcePort()->boundPolygon()->ctrY();
+        double tX2 = 0;
+        double tY2 = 0;
+        for (size_t tPortId = 0; tPortId < _db.vNet(netId2)->numTPorts(); ++ tPortId) {
+            tX2 += _db.vNet(netId2)->targetPort(tPortId)->boundPolygon()->ctrX();
+            tY2 += _db.vNet(netId2)->targetPort(tPortId)->boundPolygon()->ctrY();
+        }
+        tX2 /= _db.vNet(netId2)->numTPorts();
+        tY2 /= _db.vNet(netId2)->numTPorts();
+        double netX2 = 0.5 * (sX2 + tX2);
+        double netY2 = 0.5 * (sY2 + tY2);
+
+        return dist(centerX, centerY, netX1, netY1) < dist(centerX, centerY, netX2, netY2);
+    };
+    std::sort(vRouteOrder.begin(), vRouteOrder.end(), compareByDist);
+
+}
+
+void DetailedMgr::orderedAStar(bool sameNetCong) {
+    auto AStarWidth = [] (Segment* seg) -> double {
+        return (seg->width() * seg->length()) / (abs(seg->sX() - seg->tX()) + abs(seg->sY() - seg->tY()));
+    };
+    auto segmentWidth = [] (Segment* seg, double astarWidth) -> double {
+        return (astarWidth * (abs(seg->sX() - seg->tX()) + abs(seg->sY() - seg->tY()))) / seg->length();
+    };
+    cerr << "negoAStar..." << endl;
+    for (size_t layId = 0; layId < _db.numLayers(); ++ layId) {
+        cerr << "layId = " << layId << endl;
+        vector<size_t> vRouteOrder;
+        decideRouteOrder(layId, vRouteOrder);
+        for (size_t orderId = 0; orderId < vRouteOrder.size(); ++ orderId) {
+            size_t netId = vRouteOrder[orderId];
+            Net* net = _db.vNet(netId);
+            clearNet(layId, netId);
+            cerr << " netId = " << netId << endl;
+            for (size_t segId = 0; segId < net->numSegments(layId); ++ segId) {
+                Segment* segment = net->vSegment(layId, segId);
+                if (segment->width() > 3 * _gridWidth) {
+                    int sXId = floor(segment->trace()->sNode()->ctrX() / _gridWidth);
+                    int sYId = floor(segment->trace()->sNode()->ctrY() / _gridWidth);
+                    int tXId = floor(segment->trace()->tNode()->ctrX() / _gridWidth);
+                    int tYId = floor(segment->trace()->tNode()->ctrY() / _gridWidth);
+                    int sRealXId = floor(segment->sX() / _gridWidth);
+                    int sRealYId = floor(segment->sY() / _gridWidth);
+                    int tRealXId = floor(segment->tX() / _gridWidth);
+                    int tRealYId = floor(segment->tY() / _gridWidth);
+                    // cerr << "origin width = " << segment->width() << endl;
+                    // cerr << "astar width = " << AStarWidth(segment) << endl;
+                    // AStarRouter router(_vGrid[layId], make_pair(sXId, sYId), make_pair(tXId, tYId), make_pair(sRealXId, sRealYId), make_pair(tRealXId, tRealYId), 
+                    //                 _gridWidth, segment->length(), AStarWidth(segment), _widthRatio, _obsCongest, _distWeight, _cLineDistWeight);
+                    OctAStarRouter router(_vGrid[layId], make_pair(sXId, sYId), make_pair(tXId, tYId), make_pair(sRealXId, sRealYId), make_pair(tRealXId, tRealYId), 
+                                    _gridWidth, segment->length(), segment->width(), _widthRatio, _obsCongest, _distWeight, _cLineDistWeight, true);
+                    router.route();
+                    // segment->setWidth(segmentWidth(segment, router.exactWidth() * _gridWidth));
+                    segment->setWidth(router.exactWidth() * _gridWidth);
+                    segment->setLength(router.exactLength() * _gridWidth);
+                    for (size_t pathId = 0; pathId < router.numPaths(); ++ pathId) {
+                        Grid* grid = router.vPath(pathId);
+                        vector< pair<double, double> > vVtx;
+                        int xId = grid->xId();
+                        int yId = grid->yId();
+                        vVtx.push_back(make_pair(xId*_gridWidth, yId*_gridWidth));
+                        vVtx.push_back(make_pair((xId+1)*_gridWidth, yId*_gridWidth));
+                        vVtx.push_back(make_pair((xId+1)*_gridWidth, (yId+1)*_gridWidth));
+                        vVtx.push_back(make_pair(xId*_gridWidth, (yId+1)*_gridWidth));
+                        Polygon* p = new Polygon(vVtx, _plot);
+                        p->plot(SVGPlotColor::black, layId);
+                    }
+                    for (size_t pGridId = 0; pGridId < router.numPGrids(); ++ pGridId) {
+                        Grid* grid = router.vPGrid(pGridId);
+                        if (sameNetCong) {
+                            grid->addCongestCur(0.5);
+                        }
+                        if (!grid->hasNet(netId)) {
+                            _vNetGrid[netId][layId].push_back(grid);
+                            grid->addNet(netId);
+                        }
+                    }
+                }
+                else {
+                    if (segment->width() > 0) {
+                        cerr << "WARNING: net" << netId << " segment" << segId << " is not wide enough. Discard!" << endl;
+                    }
+                }
+            }
+
+            // update current congestion cost for each grid occupied by the net
+            for (size_t gridId = 0; gridId < _vNetGrid[netId][layId].size(); ++ gridId) {
+                if (sameNetCong) {
+                    _vNetGrid[netId][layId][gridId]->addCongestCur(0.5);
+                } else {
+                    _vNetGrid[netId][layId][gridId]->incCongestCur();
+                }
+            }
+            // update current congestion cost for each grid occupied by the net's ports
+            for (size_t portId = 0; portId < _db.vNet(netId)->numTPorts()+1; ++ portId) {
+                for (size_t gridId = 0; gridId < _vNetPortGrid[netId][portId].size(); ++ gridId) {
+                    Grid* grid = _vGrid[layId][_vNetPortGrid[netId][portId][gridId].first][_vNetPortGrid[netId][portId][gridId].second];
+                    grid->addCongestCur(_obsCongest);
+                    if (! grid->hasNet(netId)) {
+                        _vNetGrid[netId][layId].push_back(grid);
+                        grid->addNet(netId);
+                    } else {
+                        grid->decCongestCur();
+                    }
+                }
+            }
+        }
+    }
+            
+}
+
 void DetailedMgr::clearNet(size_t layId, size_t netId) {
     for (size_t gridId = 0; gridId < _vNetGrid[netId][layId].size(); ++ gridId) {
         _vNetGrid[netId][layId][gridId]->removeNet(netId);

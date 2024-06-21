@@ -238,7 +238,8 @@ int main(int argc, char* argv[]){
     //detailedMgr->check();
     //detailedMgr->plotGridMap();
     // // detailedMgr.naiveAStar();
-    detailedMgr->negoAStar(false);
+    // detailedMgr->negoAStar(false);
+    detailedMgr->orderedAStar(false);
     detailedMgr->removeObsRailGrids();
     detailedMgr->check();
     // detailedMgr->plotGridMap();

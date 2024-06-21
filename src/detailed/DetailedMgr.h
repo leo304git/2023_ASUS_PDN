@@ -76,6 +76,9 @@ class DetailedMgr {
         void removeObsRailGrids();
         void naiveAStar();
         void negoAStar(bool sameNetCong);
+        void decideRouteOrder(size_t layId, vector< pair<size_t, size_t> >& vRouteOrder);
+        void decideRouteOrder(size_t layId, vector<size_t>& vRouteOrder);
+        void orderedAStar(bool sameNetCong);
         void addPortVia();
         void plotVia();
         void addViaGrid();
@@ -137,6 +140,7 @@ class DetailedMgr {
         size_t _numYs;
         vector< vector< double > > _vTPortVolt;     // index = [netId] [netTportId], record the target port voltage during simulation
         vector< vector< double > > _vTPortCurr;     // index = [netId] [netTportId], record the target port current during simulation
+        // vector< pair<size_t, size_t> > _vRouteOrder;    // index = [orderId] <netId, segId>, record the routing order of A*-search
 
         // parameters for tuning
         size_t _numNegoIters;    // the number of negotiation iterations in each layer
