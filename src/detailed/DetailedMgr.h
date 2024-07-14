@@ -11,7 +11,7 @@ using namespace std;
 
 class DetailedMgr {
     public:
-        DetailedMgr(DB& db, SVGPlot& plot, double gridWidth) : _db(db), _plot(plot), _gridWidth(gridWidth) {
+        DetailedMgr(DB& db, SVGPlot& plot, ofstream& foutResult, double gridWidth) : _db(db), _plot(plot), _foutResult(foutResult), _gridWidth(gridWidth) {
             _numNegoIters = 1;
             _widthRatio = 0.9;
             _obsCongest = _db.numNets() * 10.0;
@@ -67,7 +67,7 @@ class DetailedMgr {
         void initGridMap();
         void initPortGridMap();
         void initSegObsGridMap();
-        void printResult();
+        void printResult(bool reportVia);
         void plotGridMap();
         void plotGridMapVoltage();
         void plotGridMapCurrent();
@@ -132,6 +132,7 @@ class DetailedMgr {
         bool legal(int xId, int yId) { return (xId>=0 && xId<_vGrid[0].size() && yId>=0 && yId<_vGrid[0][0].size()); }
         DB& _db;
         SVGPlot& _plot;
+        ofstream& _foutResult;
         double _gridWidth;
         vector< vector< vector< Grid* > > > _vGrid;     // index = [layId] [xId] [yId]; from left xId = 0, from bottom yId = 0
         vector< vector< vector< Grid* > > > _vNetGrid;  // index = [netId] [layId] [gridId]

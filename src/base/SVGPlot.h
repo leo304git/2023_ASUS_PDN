@@ -5,7 +5,7 @@
 using namespace std;
 
 enum SVGPlotColor {
-    lightsalmon,gold,greenyellow,lightblue,mediumpurple,red,orange,green,blue,purple,gray,black,white
+    lightsalmon,lightseagreen,royalblue,chocolate,gold,greenyellow,lightblue,mediumpurple,red,orange,green,blue,purple,gray,black,white
 };
 
 class SVGPlot {
@@ -16,7 +16,7 @@ class SVGPlot {
         //     startPlot(_boardWidth*_plotRatio*numLayers, _boardHeight*plotRatio);
         // }
         SVGPlot(ofstream& fout, double plotRatio) : _fout(fout), _plotRatio(plotRatio) {
-            _vColor = {"lightsalmon","gold","greenyellow","lightblue","mediumpurple","red", "orange", "green", "blue", "purple", "gray", "black", "white"};
+            _vColor = {"lightsalmon","lightseagreen","royalblue","chocolate","gold","greenyellow","lightblue","mediumpurple","red", "orange", "green", "blue", "purple", "gray", "black", "white"};
         }
         ~SVGPlot() {}
 

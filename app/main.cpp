@@ -15,7 +15,7 @@ using namespace std;
 int main(int argc, char* argv[]){
 
     ifstream finST, fin, finOb, finPa;
-    ofstream fout, ftunRes;
+    ofstream fout, ftunRes, foutResult;
     finST.open(argv[1], ifstream::in);
     if (finST.is_open()) {
         cout << "input file (st components) is opened successfully" << endl;
@@ -77,6 +77,12 @@ int main(int argc, char* argv[]){
         cout << "Tuning Result file is opened successfully" << endl;
     } else {
         cerr << "Error opening tuning result file" << endl;
+    }
+    foutResult.open(argv[7], ofstream::out);
+    if (foutResult.is_open()) {
+        cout << "Output Result file is opened successfully" << endl;
+    } else {
+        cerr << "Error opening output result file" << endl;
     }
     // ofstream fout1;
     // fout1.open(argv[2], ofstream::out);
@@ -150,10 +156,6 @@ int main(int argc, char* argv[]){
     Parser parser(finST, fin, finOb, db, plot);
     parser.parse();
 
-     //time
-    time_t start, end;
-    time(&start);
-
     // // NetworkMgr mgr(db, plot);
     PreMgr preMgr(db, plot);
 
@@ -169,8 +171,13 @@ int main(int argc, char* argv[]){
     // // parser.testInitialize(boardWidth, boardHeight, gridWidth);
 
     // // db.print();
+
+    //time
+    auto start = std::chrono::high_resolution_clock::now();
+    // time_t start, endTopo, endSizing, endRouting, end;
+    // time(&start);
     
-    DetailedMgr* detailedMgr = new DetailedMgr(db, plot, 2 * db.VIA16D8A24()->padRadius(0));
+    DetailedMgr* detailedMgr = new DetailedMgr(db, plot, foutResult, 2 * db.VIA16D8A24()->padRadius(0));
     detailedMgr->initPortGridMap();
     detailedMgr->check();
 
@@ -179,6 +186,8 @@ int main(int argc, char* argv[]){
     globalMgr.numIIter = numIIter;
     globalMgr.numVIter = numVIter;
     globalMgr.numIVIter = numIVIter;
+
+    auto endGridMap = std::chrono::high_resolution_clock::now();
 
     // // // replace this line with a real OASG building function
     // // globalMgr.buildTestOASG();
@@ -197,6 +206,8 @@ int main(int argc, char* argv[]){
     // // //globalMgr.plotRGraph();
     // globalMgr.buildTestNCOASG();
     // globalMgr.plotNCOASG();
+    auto endTopo = std::chrono::high_resolution_clock::now();
+    // time(&endTopo);
     // // globalMgr.voltageAssignment();
 // /*
     globalMgr.genCapConstrs();
@@ -227,12 +238,14 @@ int main(int argc, char* argv[]){
         cerr << "Error = " << e.getErrorCode() << endl;
         cerr << e.getMessage() << endl;
     }
+    auto endSizing = std::chrono::high_resolution_clock::now();
+    // time(&endSizing);
     // globalMgr.plotCurrentPaths();
 // */
 // /*
     // DetailedMgr detailedMgr(db, plot, 2 * db.VIA16D8A24()->drillRadius());
     delete detailedMgr;
-    detailedMgr = new DetailedMgr(db, plot, 2 * db.VIA16D8A24()->drillRadius());
+    detailedMgr = new DetailedMgr(db, plot, foutResult, 2 * db.VIA16D8A24()->drillRadius());
     detailedMgr->initGridMap();
     // detailedMgr->initSegObsGridMap();
     //detailedMgr->check();
@@ -242,6 +255,8 @@ int main(int argc, char* argv[]){
     detailedMgr->orderedAStar(false);
     detailedMgr->removeObsRailGrids();
     detailedMgr->check();
+    auto endRouting = std::chrono::high_resolution_clock::now();
+    // time(&endRouting);
     // detailedMgr->plotGridMap();
 // */
 // /*
@@ -260,36 +275,58 @@ int main(int argc, char* argv[]){
 // */
 // /*
     //detailedMgr->SmartDistribute();
-    detailedMgr->PostProcessing(false);
+    detailedMgr->PostProcessing(true);
     detailedMgr->RemoveIsolatedGrid();
-
-    time(&end);
-    double time_used = double(end - start);
-    int hour = 0, min = 0;
-    if(time_used >= 60){
-        min = time_used/60;
-        time_used = time_used - min*60;
-    }
-    if(min >= 60){
-        hour = min/60;
-        min = min%60;
-    }
+// */
+    auto end = std::chrono::high_resolution_clock::now();
+    // time(&end);
+    // double time_used = double(end - start);
+    // int hour = 0, min = 0;
+    // if(time_used >= 60){
+    //     min = time_used/60;
+    //     time_used = time_used - min*60;
+    // }
+    // if(min >= 60){
+    //     hour = min/60;
+    //     min = min%60;
+    // }
 
     detailedMgr->plotGridMap();
     //detailedMgr->plotGridMapVoltage();
     //detailedMgr->plotGridMapCurrent();
 
-    detailedMgr->writeColorMap_v2("../../exp/output/voltageColorMap.txt", 1);
-    detailedMgr->writeColorMap_v2("../../exp/output/currentColorMap.txt", 0);
-    //globalMgr.plotDB();
-    OutputWriter outputWriter;
+    // detailedMgr->writeColorMap_v2("../../exp/output/voltageColorMap.txt", 1);
+    // detailedMgr->writeColorMap_v2("../../exp/output/currentColorMap.txt", 0);
+    // //globalMgr.plotDB();
+    // OutputWriter outputWriter;
 
-    outputWriter.writeTuningResult(ftunRes, numIIter, numVIter, numIVIter, globalMgr._vArea, globalMgr._vOverlap, globalMgr._vSameNetOverlap, globalMgr._vViaArea, globalMgr._vAfterCost);
-    detailedMgr->buildMtx();
-    detailedMgr->printResult();
+    // outputWriter.writeTuningResult(ftunRes, numIIter, numVIter, numIVIter, globalMgr._vArea, globalMgr._vOverlap, globalMgr._vSameNetOverlap, globalMgr._vViaArea, globalMgr._vAfterCost);
+    // detailedMgr->buildMtx();
+    detailedMgr->printResult(true);
 
-    cout << "Time : " << hour << " hours " << min <<" mins "<< fixed << setprecision(5) << time_used << " sec " << endl; 
-// */
+    // cout << "|||||||||||||||||||||||" << endl;
+    // cout << "|||    Time Used    |||" << endl;
+    // cout << "|||||||||||||||||||||||" << endl;
+    cerr << "\n ================ Time ================" << endl;
+    cout << "Total Time : " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() * 1e-3 << " seconds" << endl;
+    cout << "GridMap Time : " << std::chrono::duration_cast<std::chrono::milliseconds>(endGridMap - start).count() << " milliseconds" << endl;
+    cout << "Topo Time : " << std::chrono::duration_cast<std::chrono::milliseconds>(endTopo - endGridMap).count() << " milliseconds" << endl;
+    cout << "Sizing Time : " << std::chrono::duration_cast<std::chrono::milliseconds>(endSizing - endTopo).count() << " milliseconds" << endl;
+    cout << "Routing Time : " << std::chrono::duration_cast<std::chrono::milliseconds>(endRouting - endSizing).count() << " milliseconds" << endl;
+    cout << "Shaping Time : " << std::chrono::duration_cast<std::chrono::milliseconds>(end - endRouting).count() << " milliseconds" << endl;
+
+    foutResult << "\n ================ Time ================" << endl;
+    foutResult << "Total Time : " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() * 1e-3 << " seconds" << endl;
+    foutResult << "GridMap Time : " << std::chrono::duration_cast<std::chrono::milliseconds>(endGridMap - start).count() << " milliseconds" << endl;
+    foutResult << "Topo Time : " << std::chrono::duration_cast<std::chrono::milliseconds>(endTopo - endGridMap).count() << " milliseconds" << endl;
+    foutResult << "Sizing Time : " << std::chrono::duration_cast<std::chrono::milliseconds>(endSizing - endTopo).count() << " milliseconds" << endl;
+    foutResult << "Routing Time : " << std::chrono::duration_cast<std::chrono::milliseconds>(endRouting - endSizing).count() << " milliseconds" << endl;
+    foutResult << "Shaping Time : " << std::chrono::duration_cast<std::chrono::milliseconds>(end - endRouting).count() << " milliseconds" << endl;
+    // cout << "Time : " << hour << " hours " << min <<" mins "<< fixed << setprecision(5) << time_used << " sec " << endl; 
+    // cout << "Topo Time : " << difftime(endTopo, start) << " sec " << endl;
+    // cout << "Sizing Time : " << difftime(endSizing, endTopo) << " sec " << endl;
+    // cout << "Routing Time : " << difftime(endRouting, endSizing) << " sec " << endl;
+
 
     // // mgr.genRGraph();
     // // // mgr.drawRGraph();

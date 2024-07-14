@@ -124,17 +124,28 @@ bool AStarRouter::route() {
 void AStarRouter::backTrace(int tXId, int tYId) {
     // GNode* node = _vGNode[_tPos.first][_tPos.second];
     GNode* node = _vGNode[tXId][tYId];
+    double exactLength = 0.0;
     while(node->parent() != node) {
         _path.push_back(_vGrid[node->xId()][node->yId()]);
         node = node->parent();
+        if (node->parent()->xId() == node->xId() || node->parent()->yId() == node->yId()) {
+            exactLength += 1.0;
+        } else {
+            exactLength += sqrt(2.0);
+        }
     }
+    _exactLength = ceil(exactLength);
     assert(node->xId() == _sPos.first && node->yId() == _sPos.second);
     _path.push_back(_vGrid[node->xId()][node->yId()]);
 
-    _exactLength = _path.size()-1;
+    // _exactLength = _path.size()-1;
     // double length = _exactLength * _gridWidth;
-    // _exactWidth = ceil(_lbWidth * _exactLength / _lbLength);
-    _exactWidth = ceil(_lbWidth/_gridWidth);
+    _exactWidth = ceil(_lbWidth * _exactLength / _lbLength);
+    if (_exactWidth < ceil(_lbWidth/_gridWidth)) {
+        _exactWidth = ceil(_lbWidth/_gridWidth);
+        cerr << "WARNING: A* grid length < global length !" << endl;
+    }
+    // _exactWidth = ceil(_lbWidth/_gridWidth);
     // cerr << "_length = " << _lbLength << ", _exactLength = " << _exactLength << " _width = " << _lbWidth << ", _exactWidth = " << _exactWidth << endl;
 
     // around the ending grid
@@ -425,7 +436,7 @@ double AStarRouter::marginCongestCost(int xId, int yId, Direction dir) {
     };
     double congestion = 0.0;
     // double threshold = 0.0001;
-    double threshold = _widthRatio * 0.5;
+    double threshold = _widthRatio * 0.00005;
     for (int w = ceil(_lbWidth/_gridWidth); prob(w) > threshold; ++ w) {
         // cerr << "w = " << w << ", prob = " << prob(w) << endl;
         double wCongestion = 0.0;

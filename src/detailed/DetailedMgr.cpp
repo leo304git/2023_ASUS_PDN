@@ -375,7 +375,7 @@ void DetailedMgr::initSegObsGridMap() {
     }
 }
 
-void DetailedMgr::printResult() {
+void DetailedMgr::printResult(bool reportVia) {
     int area = 0;
     int overlapArea = 0;
     // for (size_t layId = 0; layId < _db.numLayers(); ++ layId) {
@@ -414,18 +414,102 @@ void DetailedMgr::printResult() {
             }
         }
     }
+    int numVias = 0;
+    if (reportVia) {
+        for (size_t netId = 0; netId < _db.numNets(); ++ netId) {
+            Port* sPort = _db.vNet(netId)->sourcePort();
+            numVias += sPort->viaCluster()->numVias();
+            for (size_t tPortId = 0; tPortId < _db.vNet(netId)->numTPorts(); ++ tPortId) {
+                Port* tPort = _db.vNet(netId)->targetPort(tPortId);
+                numVias += tPort->viaCluster()->numVias();
+            }
+        }
+    }
     // overlapArea -= area;
     // cerr << "area = " << area << endl;
     // cerr << "overlapArea = " << overlapArea << endl;
-    cerr << "|||||||||||||||||||||" << endl;
-    cerr << "|| Detailed Result ||" << endl;
-    cerr << "|||||||||||||||||||||" << endl;
-    cerr << "total number of rail grids = " << numGrids << endl;
-    cerr << "total number of overlapped grids = " << numOverlappedGrids << endl;
-    cerr << "total number of overlapped obstacle grids = " << numObsRailGrids << endl;
+    cerr << "|||||||||||||||||||||||||||||||" << endl;
+    cerr << "||      Detailed Result      ||" << endl;
+    cerr << "|||||||||||||||||||||||||||||||" << endl;
+    cerr << "\n ================ Performance ================" << endl;
     cerr << "total area = " << numGrids * _gridWidth * _gridWidth << " (mm^2)" << endl;
+    if (reportVia) cerr << "total number of vias = " << numVias << endl;
     cerr << "total overlapped area = " << numOverlappedGrids * _gridWidth * _gridWidth << " (mm^2)" << endl;
     cerr << "total overlapped obstacle area = " << numObsRailGrids * _gridWidth * _gridWidth << " (mm^2)" << endl;
+    cerr << "\n ================ Power ================" << endl;
+    double worstCurrViol = 1;
+    double worstVoltViol = 1;
+    double worstRestViol = 1;
+    for (size_t netId = 0; netId < _db.numNets(); ++ netId) {
+        for (size_t tPortId = 0; tPortId < _db.vNet(netId)->numTPorts(); ++ tPortId) {
+            double loadResistance = _db.vNet(netId)->targetPort(tPortId)->voltage() / _db.vNet(netId)->targetPort(tPortId)->current();
+            _vTPortVolt[netId][tPortId] = _vTPortCurr[netId][tPortId] * loadResistance;
+            double railResistance = (_db.vNet(netId)->sourcePort()->voltage() - _vTPortVolt[netId][tPortId]) / _vTPortCurr[netId][tPortId];
+            double requiredResistance = (_db.vNet(netId)->sourcePort()->voltage() - _db.vNet(netId)->targetPort(tPortId)->voltage()) / _db.vNet(netId)->targetPort(tPortId)->current();
+            double currRatio = _vTPortCurr[netId][tPortId] / _db.vNet(netId)->targetPort(tPortId)->current();
+            double voltRatio = _vTPortVolt[netId][tPortId] / _db.vNet(netId)->targetPort(tPortId)->voltage();
+            double restRatio = railResistance / requiredResistance;
+            cerr << "net" << netId << " tPort" << tPortId << ": current = " << _vTPortCurr[netId][tPortId];
+            cerr << ", voltage = " << _vTPortVolt[netId][tPortId];
+            cerr << ", eq. resistance = " << railResistance << endl;
+            cerr << "     ratio: current =" << currRatio << ", voltage = " << voltRatio << ", resistance = " << restRatio << endl;
+            if (currRatio - 1.0 < worstCurrViol) {
+                worstCurrViol = currRatio - 1.0;
+            }
+            if (voltRatio - 1.0 < worstVoltViol) {
+                worstVoltViol = voltRatio - 1.0;
+            }
+            if (restRatio - 1.0 < worstRestViol) {
+                worstRestViol = restRatio - 1.0;
+            }
+        }
+    }
+    cerr << "worst target current violation = " << worstCurrViol << endl;
+    cerr << "worst target voltage violation = " << worstVoltViol << endl;
+    cerr << "worst target resistance violation = " << worstRestViol << endl;
+
+    _foutResult << "|||||||||||||||||||||||||||||||" << endl;
+    _foutResult << "||      Detailed Result      ||" << endl;
+    _foutResult << "|||||||||||||||||||||||||||||||" << endl;
+    _foutResult << "\n ================ Performance ================" << endl;
+    _foutResult << "total area = " << numGrids * _gridWidth * _gridWidth << " (mm^2)" << endl;
+    if (reportVia) _foutResult << "total number of vias = " << numVias << endl;
+    _foutResult << "total overlapped area = " << numOverlappedGrids * _gridWidth * _gridWidth << " (mm^2)" << endl;
+    _foutResult << "total overlapped obstacle area = " << numObsRailGrids * _gridWidth * _gridWidth << " (mm^2)" << endl;
+    _foutResult << "\n ================ Power ================" << endl;
+    worstCurrViol = 1;
+    worstVoltViol = 1;
+    worstRestViol = 1;
+    for (size_t netId = 0; netId < _db.numNets(); ++ netId) {
+        for (size_t tPortId = 0; tPortId < _db.vNet(netId)->numTPorts(); ++ tPortId) {
+            double loadResistance = _db.vNet(netId)->targetPort(tPortId)->voltage() / _db.vNet(netId)->targetPort(tPortId)->current();
+            _vTPortVolt[netId][tPortId] = _vTPortCurr[netId][tPortId] * loadResistance;
+            double railResistance = (_db.vNet(netId)->sourcePort()->voltage() - _vTPortVolt[netId][tPortId]) / _vTPortCurr[netId][tPortId];
+            double requiredResistance = (_db.vNet(netId)->sourcePort()->voltage() - _db.vNet(netId)->targetPort(tPortId)->voltage()) / _db.vNet(netId)->targetPort(tPortId)->current();
+            double currRatio = _vTPortCurr[netId][tPortId] / _db.vNet(netId)->targetPort(tPortId)->current();
+            double voltRatio = _vTPortVolt[netId][tPortId] / _db.vNet(netId)->targetPort(tPortId)->voltage();
+            double restRatio = railResistance / requiredResistance;
+            _foutResult << "net" << netId << " tPort" << tPortId << ": current = " << _vTPortCurr[netId][tPortId];
+            _foutResult << ", voltage = " << _vTPortVolt[netId][tPortId];
+            _foutResult << ", eq. resistance = " << railResistance << endl;
+            _foutResult << "     ratio: current =" << currRatio << ", voltage = " << voltRatio << ", resistance = " << restRatio << endl;
+            if (currRatio - 1.0 < worstCurrViol) {
+                worstCurrViol = currRatio - 1.0;
+            }
+            if (voltRatio - 1.0 < worstVoltViol) {
+                worstVoltViol = voltRatio - 1.0;
+            }
+            if (restRatio - 1.0 < worstRestViol) {
+                worstRestViol = restRatio - 1.0;
+            }
+        }
+    }
+    _foutResult << "worst target current violation = " << worstCurrViol << endl;
+    _foutResult << "worst target voltage violation = " << worstVoltViol << endl;
+    _foutResult << "worst target resistance violation = " << worstRestViol << endl;
+    // cerr << "total number of rail grids = " << numGrids << endl;
+    // cerr << "total number of overlapped grids = " << numOverlappedGrids << endl;
+    // cerr << "total number of overlapped obstacle grids = " << numObsRailGrids << endl;
 }
 
 void DetailedMgr::plotGridMap() {
