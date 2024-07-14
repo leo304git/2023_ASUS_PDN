@@ -948,7 +948,7 @@ void GlobalMgr::plotNCOASG() {
     }
 }
 
-void GlobalMgr::voltCurrOpt() {
+void GlobalMgr::voltCurrOpt(double threshold) {
     // store capacity constraints
     // struct CapConstr {
     //     OASGEdge* e1;
@@ -1213,13 +1213,15 @@ void GlobalMgr::voltCurrOpt() {
                 //調
                 vNetLambda[netCapId] *= 1;
             }
-            if ((currentSolver->beforeCost() - currentSolver->afterCost() < 2 && currentSolver->beforeCost() - currentSolver->afterCost() >= 0) ||
-                iIter > 10) {
+            // if ((currentSolver->beforeCost() - currentSolver->afterCost() < threshold && currentSolver->beforeCost() - currentSolver->afterCost() >= 0) 
+            //         // || iIter > 10
+            //     ) {
                 if (iIter == 0) {
                     iConverged = true;
                 }
+                _vIIter.push_back(iIter+1);
                 break;
-            }
+            // }
             iIter++;
         }
 
@@ -1283,11 +1285,13 @@ void GlobalMgr::voltCurrOpt() {
             voltageSolver->printRelaxedResult();
             // voltageSolver->collectRelaxedTempVoltage();
             // vOldVoltage = voltageSolver->vNewVoltage();
-            if ((voltageSolver->beforeCost() - voltageSolver->afterCost() < 2 && voltageSolver->beforeCost() - voltageSolver->afterCost() >= 0) ||
-                vIter > 10) {
+            if ((voltageSolver->beforeCost() - voltageSolver->afterCost() < threshold && voltageSolver->beforeCost() - voltageSolver->afterCost() >= 0) 
+                // || vIter > 10
+                ) {
                 if (vIter == 0) {
                     vConverged = true;
                 }
+                _vVIter.push_back(vIter+1);
                 break;
             }
             vIter++;
@@ -1322,6 +1326,7 @@ void GlobalMgr::voltCurrOpt() {
         vNumIVIter.push_back(make_pair(iIter+1, vIter+1));
         if ((iConverged && vConverged) || ivIter == 10) {
             converged = true;
+            _numIVIter = ivIter + 1;
             break;
         }
         ivIter++;

@@ -209,7 +209,7 @@ int main(int argc, char* argv[]){
         // globalMgr.currentDistribution();
         auto start_time = std::chrono::high_resolution_clock::now();
         
-        globalMgr.voltCurrOpt();
+        globalMgr.voltCurrOpt(0.1);
 
         // 获取结束时间点
         auto end_time = std::chrono::high_resolution_clock::now();
@@ -282,14 +282,15 @@ int main(int argc, char* argv[]){
     detailedMgr->writeColorMap_v2("../../exp/output/voltageColorMap.txt", 1);
     detailedMgr->writeColorMap_v2("../../exp/output/currentColorMap.txt", 0);
     //globalMgr.plotDB();
+    */
     OutputWriter outputWriter;
+    outputWriter.writeTuningResultNew(ftunRes, globalMgr._vIIter, globalMgr._vVIter, globalMgr._numIVIter, globalMgr._vArea, globalMgr._vOverlap, globalMgr._vSameNetOverlap, globalMgr._vViaArea, globalMgr._vAfterCost);
+    // outputWriter.writeTuningResult(ftunRes, numIIter, numVIter, numIVIter, globalMgr._vArea, globalMgr._vOverlap, globalMgr._vSameNetOverlap, globalMgr._vViaArea, globalMgr._vAfterCost);
+    // detailedMgr->buildMtx();
+    // detailedMgr->printResult();
 
-    outputWriter.writeTuningResult(ftunRes, numIIter, numVIter, numIVIter, globalMgr._vArea, globalMgr._vOverlap, globalMgr._vSameNetOverlap, globalMgr._vViaArea, globalMgr._vAfterCost);
-    detailedMgr->buildMtx();
-    detailedMgr->printResult();
-
-    cout << "Time : " << hour << " hours " << min <<" mins "<< fixed << setprecision(5) << time_used << " sec " << endl; 
-*/
+    // cout << "Time : " << hour << " hours " << min <<" mins "<< fixed << setprecision(5) << time_used << " sec " << endl; 
+// */
 
     // // mgr.genRGraph();
     // // // mgr.drawRGraph();

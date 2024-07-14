@@ -79,7 +79,7 @@ class GlobalMgr {
         void clearCapConstrs();
         void genCapConstrs();
         void setNarrowEdges();
-        void voltCurrOpt();
+        void voltCurrOpt(double threshold);
         void voltageAssignment(bool currentBased);
         void voltageDemandAssignment();
         void swapSTbyVolt();
@@ -102,6 +102,9 @@ class GlobalMgr {
         size_t numVIter; //10
 
         //羅：1109把它丟到public
+        int _numIVIter;
+        vector<int> _vIIter;
+        vector<int> _vVIter;
         vector<double> _vArea;  // record the plane area of each iteration in voltCurrOpt
         vector<double> _vViaArea;
         vector<double> _vOverlap;   // record the overlapped width of each iteration in voltCurrOpt
