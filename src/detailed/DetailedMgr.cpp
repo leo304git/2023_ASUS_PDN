@@ -978,7 +978,7 @@ void DetailedMgr::orderedAStar(bool sameNetCong) {
                     // cerr << "origin width = " << segment->width() << endl;
                     // cerr << "astar width = " << AStarWidth(segment) << endl;
                     // AStarRouter router(_vGrid[layId], make_pair(sXId, sYId), make_pair(tXId, tYId), make_pair(sRealXId, sRealYId), make_pair(tRealXId, tRealYId), 
-                    //                 _gridWidth, segment->length(), AStarWidth(segment), _widthRatio, _obsCongest, _distWeight, _cLineDistWeight);
+                    //                 _gridWidth, segment->length(), segment->width(), _widthRatio, _obsCongest, _distWeight, _cLineDistWeight);
                     OctAStarRouter router(_vGrid[layId], make_pair(sXId, sYId), make_pair(tXId, tYId), make_pair(sRealXId, sRealYId), make_pair(tRealXId, tRealYId), 
                                     _gridWidth, segment->length(), segment->width(), _widthRatio, _obsCongest, _distWeight, _cLineDistWeight, true);
                     router.route();
@@ -995,7 +995,7 @@ void DetailedMgr::orderedAStar(bool sameNetCong) {
                         vVtx.push_back(make_pair((xId+1)*_gridWidth, (yId+1)*_gridWidth));
                         vVtx.push_back(make_pair(xId*_gridWidth, (yId+1)*_gridWidth));
                         Polygon* p = new Polygon(vVtx, _plot);
-                        p->plot(SVGPlotColor::black, layId);
+                        // p->plot(SVGPlotColor::black, layId);
                     }
                     for (size_t pGridId = 0; pGridId < router.numPGrids(); ++ pGridId) {
                         Grid* grid = router.vPGrid(pGridId);
@@ -2712,6 +2712,16 @@ void DetailedMgr::writeColorMap_v2(const char* path, bool isVoltage) {
                 fprintf(fp, "%4d %4d %18.12f\n", x, y, isVoltage? _vGrid[layId][x][y]->voltage(netId): _vGrid[layId][x][y]->current(netId));
             }
             fprintf(fp, "\n");
+        }
+        
+        fprintf(fp, "%d\n", _db.vMetalLayer(layId)->numObstacles());
+        for (int obsId=0; obsId<_db.vMetalLayer(layId)->numObstacles(); obsId++) {
+            Shape* obs = _db.vMetalLayer(layId)->vObstacle(obsId)->vShape(0);
+            fprintf(fp, "%d\n", obs->numBPolyVtcs());
+            for(int vtxId=0; vtxId<obs->numBPolyVtcs(); vtxId++) {
+                fprintf(fp, "%lf %lf\n", obs->bPolygonX(vtxId), obs->bPolygonY(vtxId));
+            }
+
         }
     }
 

@@ -43,7 +43,8 @@ void SVGPlot::drawPolygon(vector< pair<double, double> > vVtx, size_t colorId, s
         _fout << (vVtx[vtxId].first + _boardWidth*layId)*_plotRatio << "," << (_boardHeight - vVtx[vtxId].second)*_plotRatio;
         if (vtxId < vVtx.size()-1) _fout << " ";
     }
-    _fout << "\" style=\"fill:" << _vColor[colorId] << ";stroke:gray;stroke-width:0;fill-opacity:0.7\" />" << endl;
+    // _fout << "\" style=\"fill:" << _vColor[colorId] << ";stroke:gray;stroke-width:0;fill-opacity:0.7\" />" << endl;
+    _fout << "\" style=\"fill:" << _vColor[colorId] << ";stroke:gray;stroke-width:0\" />" << endl;
 }
 
 tuple<int, int, int> SVGPlot::value2color(double value) {
