@@ -96,85 +96,6 @@ void Parser::parse() {
     stringstream ss;
     string word;
 
-    // parse layers
-    // data = toLineBegin("Medium");
-    // ss.str(data);
-    // ss.ignore(numeric_limits<streamsize>::max(), '$');
-    // string name, sThickness;
-    // double thickness, permittivity, lossTangent;
-    // ss >> name;
-    // // cerr << "name = " << name << endl;
-    // ss.ignore(numeric_limits<streamsize>::max(), '=');
-    // ss >> sThickness;
-    // // cerr << "thickness = " << sThickness << endl;
-    // sThickness.pop_back();
-    // sThickness.pop_back();
-    // thickness = stod(sThickness);
-    // // cerr << "thickness = " << thickness << endl;
-    // ss.ignore(numeric_limits<streamsize>::max(), '=');
-    // ss >> permittivity;
-    // // cerr << "permittivity = " << permittivity << endl;
-    // ss.ignore(numeric_limits<streamsize>::max(), '=');
-    // ss >> lossTangent;
-    // // cerr << "lossTangent = " << lossTangent << endl;
-    // _db.addMediumLayer(name, thickness, permittivity, lossTangent);
-    // getline(_fin, data);
-    // ss.str(data);
-    // ss >> word;
-    // stringstream sWord(word);
-    // getline(sWord, word, '$');
-    // // word = sWord.str();
-    // // cerr << "word = " << word << endl;
-    // while(word == "Medium" || word == "Signal" || word == "Plane") {
-    //     // ss.ignore(numeric_limits<streamsize>::max(), '$');
-    //     string name, sThickness;
-    //     double thickness;
-    //     // ss >> name;
-    //     getline(sWord, name);
-    //     // cerr << "name = " << name << endl;
-    //     ss.ignore(numeric_limits<streamsize>::max(), '=');
-    //     ss >> sThickness;
-    //     // cerr << "thickness = " << sThickness << endl;
-    //     sThickness.pop_back();
-    //     sThickness.pop_back();
-    //     thickness = stod(sThickness);
-    //     // cerr << "thickness = " << thickness << endl;
-    //     if (word == "Medium") {
-    //         double permittivity, lossTangent;
-    //         ss.ignore(numeric_limits<streamsize>::max(), '=');
-    //         ss >> permittivity;
-    //         // cerr << "permittivity = " << permittivity << endl;
-    //         ss.ignore(numeric_limits<streamsize>::max(), '=');
-    //         ss >> lossTangent;
-    //         // cerr << "lossTangent = " << lossTangent << endl;
-    //         _db.addMediumLayer(name, thickness, permittivity, lossTangent);
-    //     } else if (word == "Signal" || word == "Plane") {
-    //         double conductivity, permittivity;
-    //         ss.ignore(numeric_limits<streamsize>::max(), '=');
-    //         ss >> conductivity;
-    //         // cerr << "conductivity = " << conductivity << endl;
-    //         ss.ignore(numeric_limits<streamsize>::max(), '=');
-    //         ss >> permittivity;
-    //         // cerr << "permittivity = " << permittivity << endl;
-    //         _db.addMetalLayer(name, thickness, conductivity, permittivity);
-    //     }
-    //     getline(_fin, data);
-    //     ss.str(data);
-    //     ss >> word;
-    //     sWord.clear();
-    //     sWord.str(word);
-    //     // cerr << "sWord = " << sWord.str() << endl;
-    //     getline(sWord, word, '$');
-    //     // cerr << "word = " << word << endl;
-    // }
-
-    // _db.reverseMediumLayers();
-    // _db.reverseMetalLayers();
-    // for (int layId = 0; layId < _db.numLayers(); ++ layId) {
-    //     _layName2Id[_db.vMetalLayer(layId)->layName()] = layId;
-    //     // cerr << "layer[" << layId << "] = " << _db.vMetalLayer(layId)->layName() << endl;
-    //     // _db.vMetalLayer(layId)->print();
-    // }
     parseLayer();
     _db.setVIA16D8A24();
     parseST();
@@ -498,7 +419,7 @@ void Parser::parseShape() {
             }
         }
     }
-    cerr << "ploygon end = " << data << endl;
+    // cerr << "ploygon end = " << data << endl;
 }
 
 string Parser::parseNodeTrace() {
@@ -507,7 +428,7 @@ string Parser::parseNodeTrace() {
     string garbage;
     data = toLineBegin("Node");
     ss.str(data);
-    cerr << "parseNodeTrace: " <<  data << endl;
+    // cerr << "parseNodeTrace: " <<  data << endl;
     while(data.substr(0,4) == "Node") {
         string nodeName;
         stringstream sNodeName;
@@ -615,7 +536,7 @@ void Parser::parseVia(string data) {
     stringstream ss;
     string garbage;
     ss.str(data);
-    cerr << "parseVia: " << data << endl;
+    // cerr << "parseVia: " << data << endl;
     while (data.substr(0,3) == "Via") {
         string netName;
         if (ss.str().find("::") != string::npos) {

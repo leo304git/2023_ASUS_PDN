@@ -10,11 +10,6 @@ enum SVGPlotColor {
 
 class SVGPlot {
     public:
-        // SVGPlot(ofstream& fout, double boardWidth, double boardHeight, double gridWidth, size_t numLayers, double plotRatio)
-        // : _fout(fout), _boardWidth(boardWidth), _boardHeight(boardHeight), _gridWidth(gridWidth), _numLayers(numLayers), _plotRatio(plotRatio) {
-        //     _vColor = {"lightsalmon","gold","greenyellow","lightblue","mediumpurple","red", "orange", "green", "blue", "purple", "gray", "black", "white"};
-        //     startPlot(_boardWidth*_plotRatio*numLayers, _boardHeight*plotRatio);
-        // }
         SVGPlot(ofstream& fout, double plotRatio) : _fout(fout), _plotRatio(plotRatio) {
             _vColor = {"lightsalmon","lightseagreen","royalblue","chocolate","gold","greenyellow","lightblue","mediumpurple","red", "orange", "green", "blue", "purple", "gray", "black", "white"};
         }

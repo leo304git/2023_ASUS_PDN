@@ -14,8 +14,6 @@ class Shape {
     public:
         Shape(SVGPlot& plot) : _plot(plot) {}
         virtual ~Shape() {}
-        // double ctrX() const { return _center.first; }
-        // double ctrY() const { return _center.second; }
         virtual double ctrX() { double ctrX; return ctrX; }
         virtual double ctrY() { double ctrY; return ctrY; }
         virtual void print() {}
@@ -50,7 +48,6 @@ class Shape {
         virtual void intersectPoints(double x1, double y1, double x2, double y2, vector<pair<double, double>>& vIntersect) {}
     protected:
         SVGPlot& _plot;
-        // pair<double, double> _center;
 };
 
 class Polygon : public Shape {
@@ -346,11 +343,8 @@ class Node : public Shape {
         double bPolygonX(size_t vtxId) { return _ctr.first; }
         double bPolygonY(size_t vtxId) { return _ctr.second; }
         size_t numBPolyVtcs() { return 1; }
-        // size_t layId() { return _layId; }
-        // void setLayId(size_t layId) { _layId = layId; }
     private:
         pair<double, double> _ctr;
-        // size_t _layId;
 };
 
 class Trace : public Shape {

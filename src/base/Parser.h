@@ -8,9 +8,6 @@
 
 class Parser {
     public:
-        //Parser(ifstream& finST, ifstream& fin, DB& db, SVGPlot& plot) : _finST(finST), _fin(fin), _db(db), _plot(plot) {}
-        //Parser(ifstream& finST, ifstream& fin, DB& db, double offsetX, double offsetY, SVGPlot& plot) : _finST(finST), _fin(fin), _db(db), _offsetX(offsetX), _offsetY(offsetY), _plot(plot) {}
-        // Parser(ifstream& finST, ifstream& fin, ifstream& finOb, DB& db, double offsetX, double offsetY, SVGPlot& plot) : _finST(finST), _fin(fin), _finOb(finOb), _db(db), _offsetX(offsetX), _offsetY(offsetY), _plot(plot) {}
         Parser(ifstream& finST, ifstream& fin, ifstream& finOb, DB& db, SVGPlot& plot) : _finST(finST), _fin(fin), _finOb(finOb), _db(db), _plot(plot) {}
         ~Parser() {}
 
@@ -36,8 +33,6 @@ class Parser {
         vector< string > _vNetName;         // index = [netId]
         vector< vector< string > > _vVRM;   // index = [netId] [VRMId]
         vector< vector< string > > _vSINK;  // index = [netId] [SINKId]
-        // vector< vector< string > > _vSNode; // index = [netId] [sNodeId]
-        // vector< vector< string > > _vTNode; // index = [netId] [tNodeId]
         double _offsetX;
         double _offsetY;
         double _boardWidth;

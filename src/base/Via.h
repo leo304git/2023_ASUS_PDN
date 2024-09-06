@@ -59,8 +59,6 @@ class Via{
         }
         ~Via() {}
         
-        // unsigned int rowId() const { return _rowId; }
-        // unsigned int colId() const { return _colId; }
         size_t netId() const {return _netId; }
         ViaType viaType() const { return _viaType; }
         // drill circle of the via
@@ -79,8 +77,6 @@ class Via{
             cerr << "}" << endl;
         }
     private:
-        // unsigned int _rowId;
-        // unsigned int _colId;
         size_t _netId;
         ViaType _viaType;
         Shape* _shape;
@@ -102,24 +98,6 @@ class ViaCluster{
         size_t  numVias()       const { return _vVia.size(); }
         size_t  netId()         const { return _vVia[0]->netId(); }
         ViaType viaType()       const { return _vVia[0]->viaType(); }
-        // unsigned int nodeId() const { return _nodeId; }
-        // double centerRowId() {
-        //     double cRowId = 0;
-        //     for (size_t viaId = 0; viaId < _vVia.size(); ++viaId) {
-        //         cRowId += _vVia[viaId]->rowId();
-        //     }
-        //     cRowId /= _vVia.size();
-        //     return cRowId;
-        // }
-
-        // double centerColId() {
-        //     double cColId = 0;
-        //     for (size_t viaId = 0; viaId < _vVia.size(); ++viaId) {
-        //         cColId += _vVia[viaId]->colId();
-        //     }
-        //     cColId /= _vVia.size();
-        //     return cColId;
-        // }
 
         double centerX() {
             double x = 0;
@@ -140,7 +118,6 @@ class ViaCluster{
         }
 
         void addVia(Via* v) { _vVia.push_back(v); }
-        // void setNodeId(unsigned int nodeId) { _nodeId = nodeId; }
         void print() {
             cerr << "ViaCluster {vVia=" << endl;
             for (size_t viaId = 0; viaId < _vVia.size(); ++ viaId) {
@@ -150,7 +127,6 @@ class ViaCluster{
         }
     private:
         vector<Via*> _vVia;
-        // unsigned int _nodeId;
 };
 
 #endif

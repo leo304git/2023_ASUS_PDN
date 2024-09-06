@@ -24,8 +24,6 @@ class Layer {
 
 class MediumLayer : public Layer {
     public:
-        // MediumLayer(string name, size_t layId, double thickness, double permittivity, double lossTangent)
-        // : _layName(name), _layId(layId), _thickness(thickness), _permittivity(permittivity), _lossTangent(lossTangent) {}
         MediumLayer(string name, size_t layId, double thickness, double permittivity, double lossTangent)
         : Layer(name, layId, thickness, permittivity), _lossTangent(lossTangent) {}
         ~MediumLayer() {}
@@ -34,17 +32,11 @@ class MediumLayer : public Layer {
                  << ", permittivity=" << _permittivity << ", lossTangent=" << _lossTangent << "}" << endl;
         }
     private:
-        // double _thickness;
-        // double _permittivity;
-        // size_t _layId;
-        // string _layName;
         double _lossTangent;
 };
 
 class MetalLayer : public Layer {
     public:
-        // MetalLayer(string name, size_t layId, double thickness, double conductivity, double permittivity)
-        // : _layName(name), _layId(layId), _thickness(thickness), _conductivity(conductivity), _permittivity(permittivity) {}
         MetalLayer(string name, size_t layId, double thickness, double conductivity, double permittivity)
         : Layer(name, layId, thickness, permittivity), _conductivity(conductivity) {}
         ~MetalLayer() {}
@@ -63,10 +55,6 @@ class MetalLayer : public Layer {
             cerr << "}" << endl;
         }
     private:
-        // double            _thickness;
-        // double            _permittivity;
-        // size_t            _layId;
-        // string            _layName;
         double            _conductivity;
         vector<Obstacle*> _vObstacle;
 };

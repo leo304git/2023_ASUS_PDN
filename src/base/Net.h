@@ -72,18 +72,6 @@ class Port {
         double _T2SDist;
 };
 
-// class TwoPinNet {
-//     public:
-//         TwoPinNet() {}
-//         ~TwoPinNet() {}
-//         size_t TwoPinNetId() const { return _TwoPinNetId; }
-//     private:
-//         size_t _TwoPinNetId;
-//         ViaCluster* _sourceViaCstr;
-//         ViaCluster* _targetViaCstr;
-//         vector<Shape*> _vShape;
-// };
-
 class Segment {
     public:
         Segment(Trace* trace, pair<double, double> sPos, pair<double, double> tPos, double widthLeft, double widthRight, double sVoltage, double tVoltage, double current)
@@ -95,10 +83,6 @@ class Segment {
         ~Segment() {}
 
         Trace* trace() { return _trace; }
-        // double sX() const { return _trace->sNode()->ctrX(); }
-        // double sY() const { return _trace->sNode()->ctrY(); }
-        // double tX() const { return _trace->tNode()->ctrX(); }
-        // double tY() const { return _trace->tNode()->ctrY(); }
         double sX() const { return _sPos.first; }
         double sY() const { return _sPos.second; }
         double tX() const { return _tPos.first; }
@@ -150,16 +134,13 @@ class Net {
         ViaCluster* vAddedViaCstr(size_t aViaCstrIdx) { return _vAddedViaCstr[aViaCstrIdx]; }
         Port*       sourcePort()                      { return _sourcePort; }
         Port*       targetPort(size_t netTPortId)     { return _vTargetPort[netTPortId]; }
-        // Trace*      vTrace(size_t layId, size_t traceId) { return _vTrace[layId][traceId]; }
         Segment*    vSegment(size_t layId, size_t segId) { return _vSegment[layId][segId]; }
         size_t      numTPorts() const                 { return _vTargetPort.size(); }
-        // size_t      numTraces(size_t layId) const     { return _vTrace[layId].size(); }
         size_t      numSegments(size_t layId) const   { return _vSegment[layId].size(); }
 
         void addSPort(Port* port)                 { _sourcePort = port; }
         void addTPort(Port* port)                 { _vTargetPort.push_back(port); }
         void addAddedViaCstr(ViaCluster* viaCstr) { _vAddedViaCstr.push_back(viaCstr); }
-        // void addTrace(Trace* trace, size_t layId) { _vTrace[layId].push_back(trace); }
         void addSegment(Segment* segment, size_t layId) { _vSegment[layId].push_back(segment); }
         void sortTPort() {
             // sort _vTargetPort by their target2source distances in an ascending order
@@ -199,12 +180,9 @@ class Net {
     private:
         Port*                    _sourcePort;
         vector<Port*>            _vTargetPort;
-        // ViaCluster* _sourceViaCstr;
-        // vector<ViaCluster*> _vTargetViaCstr;
         vector<ViaCluster*>      _vAddedViaCstr;
         vector< vector<Segment*> > _vSegment;   // index = [layId] [traceId], assigned in current distribution
         vector< vector<Shape*> > _vShape;   // index = [layId] [shapeId]
-        // vector< vector<Trace*> > _vTrace;   // index = [layId] [traceId], assigned in current distribution
 };
 
 
